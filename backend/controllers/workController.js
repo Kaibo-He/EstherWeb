@@ -1,47 +1,126 @@
-const Work = require('../models/workModel');
+const { Work } = require('../models');
 
-const createWork = (req, res) => {
-    const { title, title_en } = req.body;
-    const cover = req.file ? `/uploads/${req.file.filename}` : null;
-    const finalTitleEn = title_en || title;
-    Work.create(title, finalTitleEn, cover, (err, result) => {
-        if (err) return res.status(500).send(err);
-        res.send({ id: result.insertId, title, title_en: finalTitleEn, cover });
-    });
+const createWork = async (req, res) => {
+    try {
+      const { title, title_en, cover = "default.png", coverChar = "default.png" } = req.body;
+      if (!title) {
+        return res.status(400).send({ error: "Missing required fields: title" });
+      }
+      const finalTitleEn = title_en || title;
+  
+      // 使用 Sequelize 创建记录
+      const newWork = await Work.create({ title, title_en: finalTitleEn, cover, coverChar });
+  
+      res.status(201).send(newWork);
+    } catch (error) {
+      res.status(500).send({ error: error.message });
+    }
+  };
+
+const getAllWorks = async (req, res) => {
+    try {
+      const works = await Work.findAll({
+        attributes: ['id', 'title', 'title_en', 'cover', 'coverChar'], // 选择需要的字段
+        order: [['created_at', 'DESC']], // 按时间降序排列
+      });
+      res.send(works);
+    } catch (error) {
+      res.status(500).send({ error: error.message });
+    }
+  };
+
+const deleteWork = async (req, res) => {
+    try {
+      const { id } = req.params;
+  
+      const deletedCount = await Work.destroy({
+        where: { id }, // 根据条件删除
+      });
+  
+      if (deletedCount === 0) {
+        return res.status(404).send({ error: `Work with ID ${id} not found` });
+      }
+  
+      res.send({ message: `Work with ID ${id} deleted successfully.` });
+    } catch (error) {
+      res.status(500).send({ error: error.message });
+    }
+  };
+
+const updateWorkTitle = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { title, title_en } = req.body;
+        const finalTitleEn = title_en || title;
+
+        if (!title) {
+            return res.status(400).send({ error: "Missing required fields: title" });
+        }
+
+        // 使用 Sequelize 的 update 方法
+        const [updatedCount] = await Work.update(
+            { title, title_en: finalTitleEn },
+            { where: { id } }
+        );
+
+        if (updatedCount === 0) {
+            return res.status(404).send({ error: `Work with ID ${id} not found.` });
+        }
+
+        res.send({ message: "Work title updated successfully.", title, title_en: finalTitleEn });
+    } catch (error) {
+        res.status(500).send({ error: error.message });
+    }
 };
 
-const getAllWorks = (req, res) => {
-    Work.getAll((err, results) => {
-        if (err) return res.status(500).send(err);
-        res.send(results);
-    });
+const updateWorkCover = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { cover } = req.body;
+
+        if (!cover) {
+            return res.status(400).send({ error: "Cover field is required" });
+        }
+
+        // 使用 Sequelize 的 update 方法
+        const [updatedCount] = await Work.update(
+            { cover },
+            { where: { id } }
+        );
+
+        if (updatedCount === 0) {
+            return res.status(404).send({ error: `Work with ID ${id} not found.` });
+        }
+
+        res.send({ message: "Work cover updated successfully.", cover });
+    } catch (error) {
+        res.status(500).send({ error: error.message });
+    }
 };
 
-const deleteWork = (req, res) => {
-    const { id } = req.params;
-    Work.delete(id, (err) => {
-        if (err) return res.status(500).send(err);
-        res.send({ message: `Work with ID ${id} deleted successfully.` });
-    });
+const updateWorkCoverChar = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { coverChar } = req.body;
+
+        if (!coverChar) {
+            return res.status(400).send({ error: "Cover character field is required" });
+        }
+
+        // 使用 Sequelize 的 update 方法
+        const [updatedCount] = await Work.update(
+            { coverChar },
+            { where: { id } }
+        );
+
+        if (updatedCount === 0) {
+            return res.status(404).send({ error: `Work with ID ${id} not found.` });
+        }
+
+        res.send({ message: "Work cover character updated successfully.", coverChar });
+    } catch (error) {
+        res.status(500).send({ error: error.message });
+    }
 };
 
-const updateWorkTitle = (req, res) => {
-    const { id } = req.params;
-    const { title, title_en } = req.body;
-    const finalTitleEn = title_en || title;
-    Work.updateTitle(id, title, finalTitleEn, (err) => {
-        if (err) return res.status(500).send(err);
-        res.send({ message: `Work title updated successfully.`, title, title_en: finalTitleEn });
-    });
-};
-
-const updateWorkCover = (req, res) => {
-    const { id } = req.params;
-    const coverPath = `/uploads/${req.file.filename}`;
-    Work.updateCover(id, coverPath, (err) => {
-        if (err) return res.status(500).send(err);
-        res.send({ message: 'Cover updated successfully.', cover: coverPath });
-    });
-};
-
-module.exports = { createWork, getAllWorks, deleteWork, updateWorkTitle, updateWorkCover };
+module.exports = { createWork, getAllWorks, deleteWork, updateWorkTitle, updateWorkCover, updateWorkCoverChar };
