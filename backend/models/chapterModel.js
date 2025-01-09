@@ -7,7 +7,7 @@ const Chapter = {
     },
 
     getByWork: (work_id, callback) => {
-        const sql = 'SELECT id, title, cover FROM Chapters WHERE work_id = ? ORDER BY created_at DESC';
+        const sql = 'SELECT id, title, title_en, cover FROM Chapters WHERE work_id = ? ORDER BY created_at DESC';
         db.query(sql, [work_id], callback);
     },
 
@@ -34,7 +34,7 @@ const ChapterDetail = {
     },
 
     getByChapter: (chapter_id, callback) => {
-        const sql = 'SELECT id, content_type, content FROM ChapterDetails WHERE chapter_id = ? ORDER BY created_at ASC';
+        const sql = 'SELECT id, content_type, content, content_en FROM ChapterDetails WHERE chapter_id = ? ORDER BY created_at ASC';
         db.query(sql, [chapter_id], callback);
     },
 

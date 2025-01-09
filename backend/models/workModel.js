@@ -2,12 +2,12 @@ const db = require('./db');
 
 const Work = {
     create: (title, title_en, cover, callback) => {
-        const sql = 'INSERT INTO Works (title, title_en, cover) VALUES (?, ?)';
+        const sql = 'INSERT INTO Works (title, title_en, cover) VALUES (?, ?, ?)';
         db.query(sql, [title, title_en, cover], callback);
     },
 
     getAll: callback => {
-        const sql = 'SELECT id, title, ,title_en, cover FROM Works ORDER BY created_at DESC';
+        const sql = 'SELECT id, title, title_en, cover FROM Works ORDER BY created_at DESC';
         db.query(sql, callback);
     },
 

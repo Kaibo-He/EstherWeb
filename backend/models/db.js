@@ -3,8 +3,9 @@ const mysql = require('mysql');
 const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: 'your_password',
-    database: 'PersonalWebsite'
+    password: 'password',
+    database: 'EstherWeb',
+    port: 3306
 });
 
 db.connect(err => {
