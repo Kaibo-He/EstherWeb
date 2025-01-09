@@ -1,84 +1,190 @@
-const { Character, CharacterDetail } = require('../models/characterModel');
+const { Character, CharacterDetail } = require('../models');
 
-const createCharacter = (req, res) => {
-    const { work_id, name, name_en } = req.body;
-    const cover = req.file ? `/uploads/${req.file.filename}` : null;
-    const finalNameEn = name_en || name;
-    Character.create(work_id, name, finalNameEn, cover, (err, result) => {
-        if (err) return res.status(500).send(err);
-        res.send({ id: result.insertId, work_id, name, name_en: finalNameEn, cover });
-    });
+const createCharacter = async (req, res) => {
+    try {
+        const { work_id, name, name_en, cover = "default.png" } = req.body;
+        const finalNameEn = name_en || name;
+
+        if (!work_id || !name) {
+            return res.status(400).send({ error: "Missing required fields: work_id or name" });
+        }
+
+        const newCharacter = await Character.create({
+            work_id,
+            name,
+            name_en: finalNameEn,
+            cover,
+        });
+
+        res.status(201).send(newCharacter);
+    } catch (error) {
+        res.status(500).send({ error: error.message });
+    }
 };
 
-const getCharactersByWork = (req, res) => {
-    const { work_id } = req.params;
-    Character.getByWork(work_id, (err, results) => {
-        if (err) return res.status(500).send(err);
-        res.send(results);
-    });
+const getCharactersByWork = async (req, res) => {
+    try {
+        const { work_id } = req.params;
+
+        const characters = await Character.findAll({
+            where: { work_id },
+            attributes: ['id', 'name', 'name_en', 'cover'], // 仅返回需要的字段
+            order: [['created_at', 'DESC']],
+        });
+
+        res.send(characters);
+    } catch (error) {
+        res.status(500).send({ error: error.message });
+    }
 };
 
-const deleteCharacter = (req, res) => {
-    const { id } = req.params;
-    Character.delete(id, (err) => {
-        if (err) return res.status(500).send(err);
+const deleteCharacter = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const deletedCount = await Character.destroy({
+            where: { id },
+        });
+
+        if (deletedCount === 0) {
+            return res.status(404).send({ error: `Character with ID ${id} not found.` });
+        }
+
         res.send({ message: `Character with ID ${id} deleted successfully.` });
-    });
+    } catch (error) {
+        res.status(500).send({ error: error.message });
+    }
 };
 
 // Character details
-const createCharacterDetail = (req, res) => {
-    const { character_id, detail, detail_en, detail_type } = req.body;
-    const finalDetailEn = detail_en || detail;
-    CharacterDetail.create(character_id, detail, finalDetailEn, detail_type, (err, result) => {
-        if (err) return res.status(500).send(err);
-        res.send({ id: result.insertId, character_id, detail, detail_en: finalDetailEn, detail_type });
-    });
+const createCharacterDetail = async (req, res) => {
+    try {
+        const { character_id, detail, detail_en, detail_type } = req.body;
+        const finalDetailEn = detail_en || detail;
+
+        if (!character_id || !detail) {
+            return res.status(400).send({ error: "Missing required fields: character_id or detail" });
+        }
+
+        const newCharacterDetail = await CharacterDetail.create({
+            character_id,
+            detail,
+            detail_en: finalDetailEn,
+            detail_type,
+        });
+
+        res.status(201).send(newCharacterDetail);
+    } catch (error) {
+        res.status(500).send({ error: error.message });
+    }
 };
 
-const getCharacterDetails = (req, res) => {
-    const { character_id } = req.params;
-    CharacterDetail.getByCharacter(character_id, (err, results) => {
-        if (err) return res.status(500).send(err);
-        res.send(results);
-    });
+const getCharacterDetails = async (req, res) => {
+    try {
+        const { character_id } = req.params;
+
+        const details = await CharacterDetail.findAll({
+            where: { character_id },
+            attributes: ['id', 'detail', 'detail_en', 'detail_type'],
+            order: [['created_at', 'ASC']],
+        });
+
+        res.send(details);
+    } catch (error) {
+        res.status(500).send({ error: error.message });
+    }
 };
 
-const deleteCharacterDetail = (req, res) => {
-    const { id } = req.params;
-    CharacterDetail.delete(id, (err) => {
-        if (err) return res.status(500).send(err);
+const deleteCharacterDetail = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const deletedCount = await CharacterDetail.destroy({
+            where: { id },
+        });
+
+        if (deletedCount === 0) {
+            return res.status(404).send({ error: `Character detail with ID ${id} not found.` });
+        }
+
         res.send({ message: `Character detail with ID ${id} deleted successfully.` });
-    });
+    } catch (error) {
+        res.status(500).send({ error: error.message });
+    }
 };
 
-const updateCharacterCover = (req, res) => {
-    const { id } = req.params;
-    const coverPath = req.file ? `/uploads/${req.file.filename}` : null;
-    Character.updateCover(id, coverPath, (err) => {
-        if (err) return res.status(500).send(err);
-        res.send({ message: 'Character cover updated successfully', cover: coverPath });
-    });
+const updateCharacterCover = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { cover } = req.body;
+
+        if (!cover) {
+            return res.status(400).send({ error: "Cover field is required" });
+        }
+
+        const [updatedCount] = await Character.update(
+            { cover },
+            { where: { id } }
+        );
+
+        if (updatedCount === 0) {
+            return res.status(404).send({ error: `Character with ID ${id} not found.` });
+        }
+
+        res.send({ message: "Character cover updated successfully.", cover });
+    } catch (error) {
+        res.status(500).send({ error: error.message });
+    }
 };
 
-const updateCharacterName = (req, res) => {
-    const { id } = req.params;
-    const { name, name_en } = req.body;
-    const finalNameEn = name_en || name;
-    Character.updateName(id, name, finalNameEn, (err) => {
-        if (err) return res.status(500).send(err);
-        res.send({ message: `Character name updated successfully.`, name, name_en: finalNameEn });
-    });
+const updateCharacterName = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { name, name_en } = req.body;
+        const finalNameEn = name_en || name;
+
+        if (!name) {
+            return res.status(400).send({ error: "Name field is required" });
+        }
+
+        const [updatedCount] = await Character.update(
+            { name, name_en: finalNameEn },
+            { where: { id } }
+        );
+
+        if (updatedCount === 0) {
+            return res.status(404).send({ error: `Character with ID ${id} not found.` });
+        }
+
+        res.send({ message: "Character name updated successfully.", name, name_en: finalNameEn });
+    } catch (error) {
+        res.status(500).send({ error: error.message });
+    }
 };
 
-const updateCharacterDetail = (req, res) => {
-    const { id } = req.params;
-    const { detail, detail_en } = req.body;
-    const finalDetailEn = detail_en || detail;
-    CharacterDetail.updateDetail(id, detail, finalDetailEn, (err) => {
-        if (err) return res.status(500).send(err);
-        res.send({ message: 'Character detail updated successfully.', detail, detail_en: finalDetailEn });
-    });
+const updateCharacterDetail = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { detail, detail_en } = req.body;
+        const finalDetailEn = detail_en || detail;
+
+        if (!detail) {
+            return res.status(400).send({ error: "Detail field is required" });
+        }
+
+        const [updatedCount] = await CharacterDetail.update(
+            { detail, detail_en: finalDetailEn },
+            { where: { id } }
+        );
+
+        if (updatedCount === 0) {
+            return res.status(404).send({ error: `Character detail with ID ${id} not found.` });
+        }
+
+        res.send({ message: "Character detail updated successfully.", detail, detail_en: finalDetailEn });
+    } catch (error) {
+        res.status(500).send({ error: error.message });
+    }
 };
 
 module.exports = {

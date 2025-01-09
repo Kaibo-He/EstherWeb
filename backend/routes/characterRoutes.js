@@ -1,5 +1,4 @@
 const express = require('express');
-const multer = require('multer');
 const {
     createCharacter,
     getCharactersByWork,
@@ -13,16 +12,11 @@ const {
 } = require('../controllers/characterController');
 
 const router = express.Router();
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, 'uploads/'),
-    filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname)
-});
-const upload = multer({ storage });
 
-router.post('/', upload.single('cover'), createCharacter);
+router.post('/', createCharacter);
 router.get('/:work_id', getCharactersByWork);
 router.delete('/:id', deleteCharacter);
-router.put('/:id/cover', upload.single('cover'), updateCharacterCover);
+router.put('/:id/cover', updateCharacterCover);
 router.put('/:id/name', updateCharacterName);
 
 // Character details
