@@ -2,6 +2,7 @@ const express = require('express');
 const {
     createCharacter,
     getCharactersByWork,
+    getCharacter,
     deleteCharacter,
     createCharacterDetail,
     getCharacterDetails,
@@ -15,6 +16,7 @@ const router = express.Router();
 
 router.post('/', createCharacter);
 router.get('/:work_id', getCharactersByWork);
+router.get('/one/:id', getCharacter);
 router.delete('/:id', deleteCharacter);
 router.put('/:id/cover', updateCharacterCover);
 router.put('/:id/name', updateCharacterName);

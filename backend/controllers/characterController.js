@@ -2,7 +2,7 @@ const { Character, CharacterDetail } = require('../models');
 
 const createCharacter = async (req, res) => {
     try {
-        const { work_id, name, name_en, cover = "default.png" } = req.body;
+        const { work_id, name, name_en, cover = "defaultCha.png" } = req.body;
         const finalNameEn = name_en || name;
 
         if (!work_id || !name) {
@@ -29,12 +29,30 @@ const getCharactersByWork = async (req, res) => {
         const characters = await Character.findAll({
             where: { work_id },
             attributes: ['id', 'name', 'name_en', 'cover'], // 仅返回需要的字段
-            order: [['created_at', 'DESC']],
+            order: [['id', 'ASC']],
         });
 
         res.send(characters);
     } catch (error) {
         res.status(500).send({ error: error.message });
+    }
+};
+
+const getCharacter = async (req, res) => {
+    try {
+      const { id } = req.params;
+      const character = await Character.findOne({
+        where: { id },
+        attributes: ['id', 'name', 'name_en', 'cover']
+      })
+  
+      if (!character) {
+        return res.status(404).send({ error: 'character not found' });
+      }
+  
+      res.send(character);
+    } catch (error) {
+      res.status(500).send({ error: error.message });
     }
 };
 
@@ -86,7 +104,7 @@ const getCharacterDetails = async (req, res) => {
         const details = await CharacterDetail.findAll({
             where: { character_id },
             attributes: ['id', 'detail', 'detail_en', 'detail_type'],
-            order: [['created_at', 'ASC']],
+            order: [['id', 'ASC']],
         });
 
         res.send(details);
@@ -190,6 +208,7 @@ const updateCharacterDetail = async (req, res) => {
 module.exports = {
     createCharacter,
     getCharactersByWork,
+    getCharacter,
     deleteCharacter,
     createCharacterDetail,
     getCharacterDetails,

@@ -21,13 +21,31 @@ const getAllWorks = async (req, res) => {
     try {
       const works = await Work.findAll({
         attributes: ['id', 'title', 'title_en', 'cover', 'coverChar'], // 选择需要的字段
-        order: [['created_at', 'DESC']], // 按时间降序排列
+        order: [['id', 'ASC']], // 按时间降序排列
       });
       res.send(works);
     } catch (error) {
       res.status(500).send({ error: error.message });
     }
   };
+
+const getWork = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const work = await Work.findOne({
+      where: { id },
+      attributes: ['id', 'title', 'title_en', 'cover', 'coverChar']
+    })
+
+    if (!work) {
+      return res.status(404).send({ error: 'Work not found' }); 
+    }
+
+    res.send(work); 
+  } catch (error) {
+    res.status(500).send({ error: error.message }); 
+  }
+};
 
 const deleteWork = async (req, res) => {
     try {
@@ -123,4 +141,4 @@ const updateWorkCoverChar = async (req, res) => {
     }
 };
 
-module.exports = { createWork, getAllWorks, deleteWork, updateWorkTitle, updateWorkCover, updateWorkCoverChar };
+module.exports = { createWork, getAllWorks, getWork, deleteWork, updateWorkTitle, updateWorkCover, updateWorkCoverChar };

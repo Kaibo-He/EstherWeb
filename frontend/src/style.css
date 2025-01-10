@@ -1,0 +1,309 @@
+.front-topBar {
+  display: flex; /* 使用 flexbox */
+  align-items: center; /* 垂直方向居中对齐 */
+  justify-content: space-between; /* 元素之间的空间自动分配 */
+  gap: 10px; /* 元素之间的间距 */
+  padding: 10px; /* 内边距 */
+}
+
+.language-toggle {
+  position: relative;
+  width: 40px;
+  height: 20px;
+  background-color: white;
+  border: 3px solid black; /* 设置边框宽度、样式和颜色 */
+  border-radius: 50px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px;
+}
+
+.toggle-button {
+  position: absolute;
+  width: 30px;
+  height: 25px;
+  background-color: white;
+  border: 3px solid black; /* 设置边框宽度、样式和颜色 */
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-sys);
+  font-size: var(--fontSize-xs);
+  font-weight: bold;
+  transition: transform 0.3s ease;
+}
+
+.toggle-button.english {
+  transform: translateX(12px); /* 向右滑动 */
+}
+
+.toggle-button.chinese {
+  transform: translateX(-7px); /* 靠左位置 */
+}
+
+.image-button {
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  border: 3px solid black; /* 设置边框宽度、样式和颜色 */
+  border-radius: 50px;
+  background-color: transparent;
+}
+
+.image-button img {
+  width: 30px;
+  height: 30px;
+  object-fit: cover;
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+}
+
+.image-button img:hover {
+  transform: scale(1.1);
+}
+
+.home-container{
+  text-align: center;
+}
+
+.home-h1{
+  font-size: var(--fontSize-l);
+  font-family: var(--font-sys);
+  color: black;
+  margin-bottom: 50px;
+  margin-top: 100px;
+}
+
+.workList-container {
+  display: flex;
+  justify-content: center; /* 水平居中 */
+  align-items: flex-start; /* 保持列表从顶部开始排列 */
+  flex-wrap: wrap; /* 如果列表项宽度过大时自动换行 */
+  max-width: 1200px;
+  margin: 0 auto; /* 水平居中整个页面 */
+  padding: 20px;
+}
+
+/*Work item*/
+.work-container {
+  position: relative;
+  width: 1000px; /* 矩形宽度 */
+  height: 85px; /* 矩形高度 */
+  background-color: white; /* 背景色（可选） */
+  display: flex;
+  justify-content: space-between;
+  overflow: hidden;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  border: 0;
+}
+
+.left-trapezoid, .right-trapezoid {
+  position: absolute;
+  height: 100%; /* 高度与容器相同 */
+  border: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  background-repeat: no-repeat;
+  transition: transform 0.3s ease; /* 添加过渡效果 */
+}
+
+.left-trapezoid {
+  clip-path: polygon(0% 0%, 100% 0%, 75% 100%, 0% 100%);
+  width: 70%;
+}
+
+.right-trapezoid {
+  clip-path: polygon(41% 0%, 100% 0%, 100% 100%, 9.3% 100%);
+  left: 48%; /* 将右梯形定位到容器的右半部分 */
+  width: 55%;
+}
+
+.left-trapezoid::before {
+  content: attr(data-text); /* 使用 data-text 属性插入文字 */
+  position: absolute;
+  top: 10px; /* 距离顶部 10px */
+  right: 120px; /* 距离右边 10px */
+  color: black;
+  font-size: var(--fontSize-s);
+  font-weight: bold;
+  text-align: right; /* 对齐到右侧 */
+  z-index: 2;
+}
+
+.right-trapezoid::before {
+  content: attr(data-text); /* 使用 data-text 属性插入文字 */
+  position: absolute;
+  bottom: 10px; /* 距离顶部 10px */
+  left: 150px; /* 距离右边 10px */
+  color: black;
+  font-size: var(--fontSize-s);
+  font-weight: bold;
+  text-align: right; /* 对齐到右侧 */
+  z-index: 2;
+}
+
+.left-trapezoid::after, .right-trapezoid::after {
+  content: ''; /* 伪元素内容为空 */
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1; /* 蒙版层 */
+  background: rgba(255, 255, 255, 0.3); /* 默认白色半透明蒙版 */
+  transition: background 0.3s ease; /* 添加过渡效果 */
+}
+
+.left-trapezoid:hover, .right-trapezoid:hover {
+  transform: scale(1.1); /* 放大背景 */
+}
+
+.left-trapezoid:hover::after, .right-trapezoid:hover::after {
+  background: rgba(255, 255, 255, 0); /* 悬停时去掉蒙版（变为透明） */
+}
+
+.cha-title{
+  display: flex;
+  align-items: flex-end;
+  margin-bottom: 50px;
+  margin-top: 50px;
+}
+
+.cha-h1{
+  font-size: var(--fontSize-l);
+  font-family: var(--font-sys);
+  color: black;
+}
+
+.cha-h2{
+  font-size: var(--fontSize-m);
+  font-family: var(--font-sys);
+  color: grey;
+}
+
+.chaList-container {
+  display: flex;
+  justify-content: center; /* 水平居中 */
+  align-items: flex-start; /* 保持列表从顶部开始排列 */
+  flex-wrap: wrap; /* 如果列表项宽度过大时自动换行 */
+  max-width: 1200px;
+  margin: 0 auto; /* 水平居中整个页面 */
+  padding: 20px;
+}
+
+.chaList-container{
+  text-align: center;
+}
+
+.cha-container {
+  position: relative;
+  width: 1000px; /* 矩形宽度 */
+  height: 85px; /* 矩形高度 */
+  display: flex;
+  justify-content: space-between;
+  overflow: hidden;
+  margin-bottom: 20px;
+  border: 0;
+  border-radius: 10px;
+  background-repeat: no-repeat; 
+  overflow: hidden;
+  transition: transform 0.3s ease;
+}
+
+.cha-button {
+  position: absolute;
+  height: 100%; /* 高度与容器相同 */
+  width: 100%;
+  border: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  background-repeat: no-repeat;
+  transition: transform 0.3s ease; /* 添加过渡效果 */
+}
+
+.cha-button:before {
+  content: attr(data-text); /* 使用 data-text 属性插入文字 */
+  position: absolute;
+  top: 50%; /* 距离顶部 10px */
+  left: 50px; /* 距离右边 10px */
+  color: black;
+  font-size: var(--fontSize-m);
+  font-weight: bold;
+  text-align: right; /* 对齐到右侧 */
+  z-index: 2;
+  transform: translateY(-50%);
+}
+
+.cha-button:hover {
+  transform: scale(1.1); /* 放大背景 */
+}
+
+.cha-button:hover::after {
+  background: rgba(255, 255, 255, 0); /* 悬停时去掉蒙版（变为透明） */
+}
+
+.cha-button::after  {
+  content: ''; /* 伪元素内容为空 */
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1; /* 蒙版层 */
+  background: rgba(255, 255, 255, 0.3); /* 默认白色半透明蒙版 */
+  transition: background 0.3s ease; /* 添加过渡效果 */
+}
+
+.detailList-container {
+  flex-direction: column;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center; /* 水平居中 */
+  align-items: center; /* 保持列表从顶部开始排列 */
+  flex-wrap: wrap; /* 如果列表项宽度过大时自动换行 */
+  max-width: 1200px;
+  margin: 0 auto; /* 水平居中整个页面 */
+  padding: 20px;
+  text-align: center;
+}
+
+.detail-img {
+  max-width: 100%;
+}
+
+.detail-text {
+  max-width: 100%;
+  font-family: var(--font-text);
+  font-size: var(--fontSize-m);
+  text-align: left; /* 左对齐 */
+  white-space: pre-wrap; /* 保留换行符并支持自动换行 */
+  word-wrap: break-word; /* 长单词自动换行 */
+  overflow-wrap: break-word; /* 支持现代浏览器的自动换行 */
+  text-indent: 2em; /* 每段首行缩进 */
+  margin-bottom: 1em; /* 可选：段落之间的间距 */
+}
+
+.detail-link {
+  max-width: 100%;
+  font-family: var(--font-sys);
+  font-size: var(--fontSize-l);
+  font-weight: bold;
+  color: black;
+}
+
+.detail-video {
+  width: 100%;
+}
+
+.detail-item {
+  width: 100%; /* 子项占满容器宽度 */
+  display: flex; /* 确保子项是块级元素 */
+  justify-content: center;
+  align-items: center;
+}
