@@ -1,0 +1,66 @@
+.front-topBar {
+  display: flex; /* 使用 flexbox */
+  align-items: center; /* 垂直方向居中对齐 */
+  justify-content: space-between; /* 元素之间的空间自动分配 */
+  gap: 10px; /* 元素之间的间距 */
+  padding: 10px; /* 内边距 */
+}
+
+.language-toggle {
+  position: relative;
+  width: 40px;
+  height: 20px;
+  background-color: white;
+  border: 3px solid black; /* 设置边框宽度、样式和颜色 */
+  border-radius: 50px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px;
+}
+
+.toggle-button {
+  position: absolute;
+  width: 30px;
+  height: 25px;
+  background-color: white;
+  border: 3px solid black; /* 设置边框宽度、样式和颜色 */
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-sys);
+  font-size: var(--fontSize-s);
+  font-weight: bold;
+  transition: transform 0.3s ease;
+}
+
+.toggle-button.english {
+  transform: translateX(12px); /* 向右滑动 */
+}
+
+.toggle-button.chinese {
+  transform: translateX(-7px); /* 靠左位置 */
+}
+
+.image-button {
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  border: 3px solid black; /* 设置边框宽度、样式和颜色 */
+  border-radius: 50px;
+  background-color: transparent;
+}
+
+.image-button img {
+  width: 30px;
+  height: 30px;
+  object-fit: cover;
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+}
+
+.image-button img:hover {
+  transform: scale(1.1);
+}
