@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import './FrontTopBar.css'; // 导入样式
+import '../../style.css'; // 导入样式
 
 const LanguageToggle = () => {
   const location = useLocation(); // 获取当前路由
@@ -23,7 +23,7 @@ const LanguageToggle = () => {
 
     // 路由切换
     if (newLanguage === 'en') {
-      navigate(`${currentPath}en`);
+      navigate(currentPath === '/' ? `${currentPath}en` : `${currentPath}/en`);
     } else {
       navigate(currentPath.replace(/\/en$/, '') || '/');
     }

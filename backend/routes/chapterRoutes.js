@@ -2,6 +2,7 @@ const express = require('express');
 const {
     createChapter,
     getChaptersByWork,
+    getChapter,
     deleteChapter,
     createChapterDetail,
     getChapterDetails,
@@ -15,6 +16,7 @@ const router = express.Router();
 
 router.post('/', createChapter);
 router.get('/:work_id', getChaptersByWork);
+router.get('/one/:id', getChapter);
 router.delete('/:id', deleteChapter);
 router.put('/:id/cover', updateChapterCover);
 router.put('/:id/title', updateChapterTitle);

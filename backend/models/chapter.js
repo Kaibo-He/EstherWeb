@@ -39,7 +39,7 @@ module.exports = (sequelize) => {
       },
       cover: {
         type: DataTypes.STRING,
-        defaultValue: 'uploads/default.png'
+        defaultValue: 'uploads/defaultCha.png'
       },
       created_at: {
         type: DataTypes.DATE,

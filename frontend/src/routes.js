@@ -1,4 +1,5 @@
 import { Outlet, Navigate } from 'react-router-dom';
+import FrontLayout from './pages/FrontLayout';
 import HomePage from './pages/HomePage';
 import ChapterList from './pages/ChapterList';
 import ChapterDetail from './pages/ChapterDetail';
@@ -18,43 +19,19 @@ const routes = [
   // 前台页面
   {
     path: '/',
-    element: <HomePage />,
-  },
-  {
-    path: '/chapter/:work_id',
-    element: <ChapterList />,
-  },
-  {
-    path: '/chapter/:work_id/:chapter_id',
-    element: <ChapterDetail />,
-  },
-  {
-    path: '/character/:work_id',
-    element: <CharacterList />,
-  },
-  {
-    path: '/character/:work_id/:character_id',
-    element: <CharacterDetail />,
-  },
-  {
-    path: '/en',
-    element: <HomePage isEnglish={true} />,
-  },
-  {
-    path: '/chapter/:work_id/en',
-    element: <ChapterList isEnglish={true} />,
-  },
-  {
-    path: '/chapter/:work_id/:chapter_id/en',
-    element: <ChapterDetail isEnglish={true} />,
-  },
-  {
-    path: '/character/:work_id/en',
-    element: <CharacterList isEnglish={true} />,
-  },
-  {
-    path: '/character/:work_id/:character_id/en',
-    element: <CharacterDetail isEnglish={true} />,
+    element: <FrontLayout />, // 使用 FrontLayout 包裹
+    children: [
+      { path: '', element: <HomePage /> },
+      { path: 'chapter/:work_id', element: <ChapterList /> },
+      { path: 'chapter/:work_id/:chapter_id', element: <ChapterDetail /> },
+      { path: 'character/:work_id', element: <CharacterList /> },
+      { path: 'character/:work_id/:character_id', element: <CharacterDetail /> },
+      { path: 'en', element: <HomePage isEnglish={true} /> },
+      { path: 'chapter/:work_id/en', element: <ChapterList isEnglish={true} /> },
+      { path: 'chapter/:work_id/:chapter_id/en', element: <ChapterDetail isEnglish={true} /> },
+      { path: 'character/:work_id/en', element: <CharacterList isEnglish={true} /> },
+      { path: 'character/:work_id/:character_id/en', element: <CharacterDetail isEnglish={true} /> },
+    ],
   },
 
   // 后台管理页面

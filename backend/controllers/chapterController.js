@@ -2,7 +2,7 @@ const { Chapter, ChapterDetail } = require('../models');
 
 const createChapter = async (req, res) => {
     try {
-        const { work_id, title, title_en, cover = "default.png" } = req.body;
+        const { work_id, title, title_en, cover = "defaultCha.png" } = req.body;
 
         if (!work_id || !title) {
             return res.status(400).send({ error: "Missing required fields: work_id or title" });
@@ -30,12 +30,30 @@ const getChaptersByWork = async (req, res) => {
         const chapters = await Chapter.findAll({
             where: { work_id },
             attributes: ['id', 'title', 'title_en', 'cover'], // 仅返回需要的字段
-            order: [['created_at', 'DESC']],
+            order: [['id', 'ASC']],
         });
 
         res.send(chapters);
     } catch (error) {
         res.status(500).send({ error: error.message });
+    }
+};
+
+const getChapter = async (req, res) => {
+    try {
+      const { id } = req.params;
+      const chapter = await Chapter.findOne({
+        where: { id },
+        attributes: ['id', 'title', 'title_en', 'cover']
+      })
+  
+      if (!chapter) {
+        return res.status(404).send({ error: 'chapter not found' });
+      }
+  
+      res.send(chapter);
+    } catch (error) {
+      res.status(500).send({ error: error.message });
     }
 };
 
@@ -87,7 +105,7 @@ const getChapterDetails = async (req, res) => {
         const details = await ChapterDetail.findAll({
             where: { chapter_id },
             attributes: ['id', 'content', 'content_en', 'content_type'],
-            order: [['created_at', 'ASC']],
+            order: [['id', 'ASC']],
         });
 
         res.send(details);
@@ -193,6 +211,7 @@ const updateChapterDetail = async (req, res) => {
 module.exports = {
     createChapter,
     getChaptersByWork,
+    getChapter,
     deleteChapter,
     createChapterDetail,
     getChapterDetails,
