@@ -17,6 +17,6 @@ router.get('/:id', getWork);
 router.delete('/:id', deleteWork);
 router.put('/:id/title', updateWorkTitle);
 router.put('/:id/cover', updateWorkCover);
-router.put('/:id/cover_char', updateWorkCoverChar);
+router.put('/:id/coverChar', updateWorkCoverChar);
 
 module.exports = router;

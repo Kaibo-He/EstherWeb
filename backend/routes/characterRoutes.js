@@ -6,6 +6,7 @@ const {
     deleteCharacter,
     createCharacterDetail,
     getCharacterDetails,
+    getCharacterDetail,
     deleteCharacterDetail,
     updateCharacterCover,
     updateCharacterName,
@@ -24,6 +25,7 @@ router.put('/:id/name', updateCharacterName);
 // Character details
 router.post('/details', createCharacterDetail);
 router.get('/details/:character_id', getCharacterDetails);
+router.get('/details/one/:id', getCharacterDetail);
 router.delete('/details/:id', deleteCharacterDetail);
 router.put('/details/:id', updateCharacterDetail);
 

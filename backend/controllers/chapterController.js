@@ -98,6 +98,24 @@ const createChapterDetail = async (req, res) => {
     }
 };
 
+const getChapterDetail = async (req, res) => {
+    try {
+      const { id} = req.params;
+      const chapterDetail = await ChapterDetail.findOne({
+        where: { id },
+        attributes: ['id', 'content', 'content_en', 'content_type']
+      })
+  
+      if (!chapterDetail) {
+        return res.status(404).send({ error: 'chapterDetial not found' });
+      }
+  
+      res.send(chapterDetail);
+    } catch (error) {
+      res.status(500).send({ error: error.message });
+    }
+};
+
 const getChapterDetails = async (req, res) => {
     try {
         const { chapter_id } = req.params;
@@ -137,19 +155,15 @@ const updateChapterCover = async (req, res) => {
         const { id } = req.params;
         const { cover } = req.body;
 
-        if (!cover) {
-            return res.status(400).send({ error: "Cover field is required" });
-        }
-
         const [updatedCount] = await Chapter.update(
             { cover },
             { where: { id } }
         );
 
-        if (updatedCount === 0) {
+        const exist = await Chapter.findOne({ where: { id } });
+        if (!exist) {
             return res.status(404).send({ error: `Chapter with ID ${id} not found.` });
         }
-
         res.send({ message: "Chapter cover updated successfully.", cover });
     } catch (error) {
         res.status(500).send({ error: error.message });
@@ -161,10 +175,6 @@ const updateChapterTitle = async (req, res) => {
         const { id } = req.params;
         const { title, title_en } = req.body;
 
-        if (!title) {
-            return res.status(400).send({ error: "Title field is required" });
-        }
-
         const finalTitleEn = title_en || title;
 
         const [updatedCount] = await Chapter.update(
@@ -172,7 +182,8 @@ const updateChapterTitle = async (req, res) => {
             { where: { id } }
         );
 
-        if (updatedCount === 0) {
+        const exist = await Chapter.findOne({ where: { id } });
+        if (!exist) {
             return res.status(404).send({ error: `Chapter with ID ${id} not found.` });
         }
 
@@ -185,21 +196,18 @@ const updateChapterTitle = async (req, res) => {
 const updateChapterDetail = async (req, res) => {
     try {
         const { id } = req.params;
-        const { content, content_en } = req.body;
-
-        if (!content) {
-            return res.status(400).send({ error: "Content field is required" });
-        }
-
+        const { content, content_en, content_type } = req.body;
+ 
         const finalContentEn = content_en || content;
 
         const [updatedCount] = await ChapterDetail.update(
-            { content, content_en: finalContentEn },
+            { content, content_en: finalContentEn, content_type },
             { where: { id } }
         );
 
-        if (updatedCount === 0) {
-            return res.status(404).send({ error: `Chapter detail with ID ${id} not found.` });
+        const exist = await ChapterDetail.findOne({ where: { id } });
+        if (!exist) {
+            return res.status(404).send({ error: `Chapterdetail with ID ${id} not found.` });
         }
 
         res.send({ message: "Chapter detail updated successfully.", content, content_en: finalContentEn });
@@ -215,6 +223,7 @@ module.exports = {
     deleteChapter,
     createChapterDetail,
     getChapterDetails,
+    getChapterDetail,
     deleteChapterDetail,
     updateChapterCover,
     updateChapterTitle,
