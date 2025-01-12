@@ -28,7 +28,6 @@ const getCharactersByWork = async (req, res) => {
 
         const characters = await Character.findAll({
             where: { work_id },
-            attributes: ['id', 'name', 'name_en', 'cover'], // 仅返回需要的字段
             order: [['id', 'ASC']],
         });
 
@@ -42,8 +41,7 @@ const getCharacter = async (req, res) => {
     try {
       const { id } = req.params;
       const character = await Character.findOne({
-        where: { id },
-        attributes: ['id', 'name', 'name_en', 'cover']
+        where: { id }
       })
   
       if (!character) {
@@ -97,13 +95,30 @@ const createCharacterDetail = async (req, res) => {
     }
 };
 
+const getCharacterDetail = async (req, res) => {
+    try {
+      const { id} = req.params;
+      const characterDetail = await CharacterDetail.findOne({
+        where: { id },
+        attributes: ['id', 'detail', 'detail_en', 'detail_type']
+      })
+  
+      if (!characterDetail) {
+        return res.status(404).send({ error: 'characterDetail not found' });
+      }
+  
+      res.send(characterDetail);
+    } catch (error) {
+      res.status(500).send({ error: error.message });
+    }
+};
+
 const getCharacterDetails = async (req, res) => {
     try {
         const { character_id } = req.params;
 
         const details = await CharacterDetail.findAll({
             where: { character_id },
-            attributes: ['id', 'detail', 'detail_en', 'detail_type'],
             order: [['id', 'ASC']],
         });
 
@@ -145,7 +160,8 @@ const updateCharacterCover = async (req, res) => {
             { where: { id } }
         );
 
-        if (updatedCount === 0) {
+        const exist = await Character.findOne({ where: { id } });
+        if (!exist) {
             return res.status(404).send({ error: `Character with ID ${id} not found.` });
         }
 
@@ -170,7 +186,8 @@ const updateCharacterName = async (req, res) => {
             { where: { id } }
         );
 
-        if (updatedCount === 0) {
+        const exist = await Character.findOne({ where: { id } });
+        if (!exist) {
             return res.status(404).send({ error: `Character with ID ${id} not found.` });
         }
 
@@ -183,20 +200,17 @@ const updateCharacterName = async (req, res) => {
 const updateCharacterDetail = async (req, res) => {
     try {
         const { id } = req.params;
-        const { detail, detail_en } = req.body;
+        const { detail, detail_en, detail_type } = req.body;
         const finalDetailEn = detail_en || detail;
-
-        if (!detail) {
-            return res.status(400).send({ error: "Detail field is required" });
-        }
-
+        
         const [updatedCount] = await CharacterDetail.update(
-            { detail, detail_en: finalDetailEn },
+            { detail, detail_en: finalDetailEn, detail_type },
             { where: { id } }
         );
 
-        if (updatedCount === 0) {
-            return res.status(404).send({ error: `Character detail with ID ${id} not found.` });
+        const exist = await CharacterDetail.findOne({ where: { id } });
+        if (!exist) {
+            return res.status(404).send({ error: `CharacterDetail with ID ${id} not found.` });
         }
 
         res.send({ message: "Character detail updated successfully.", detail, detail_en: finalDetailEn });
@@ -212,6 +226,7 @@ module.exports = {
     deleteCharacter,
     createCharacterDetail,
     getCharacterDetails,
+    getCharacterDetail,
     deleteCharacterDetail,
     updateCharacterCover,
     updateCharacterName,

@@ -81,7 +81,8 @@ const updateWorkTitle = async (req, res) => {
             { where: { id } }
         );
 
-        if (updatedCount === 0) {
+        const exist = await Work.findOne({ where: { id } });
+        if (!exist) {
             return res.status(404).send({ error: `Work with ID ${id} not found.` });
         }
 
@@ -96,17 +97,14 @@ const updateWorkCover = async (req, res) => {
         const { id } = req.params;
         const { cover } = req.body;
 
-        if (!cover) {
-            return res.status(400).send({ error: "Cover field is required" });
-        }
-
         // 使用 Sequelize 的 update 方法
         const [updatedCount] = await Work.update(
             { cover },
             { where: { id } }
         );
 
-        if (updatedCount === 0) {
+        const exist = await Work.findOne({ where: { id } });
+        if (!exist) {
             return res.status(404).send({ error: `Work with ID ${id} not found.` });
         }
 
@@ -121,17 +119,14 @@ const updateWorkCoverChar = async (req, res) => {
         const { id } = req.params;
         const { coverChar } = req.body;
 
-        if (!coverChar) {
-            return res.status(400).send({ error: "Cover character field is required" });
-        }
-
         // 使用 Sequelize 的 update 方法
         const [updatedCount] = await Work.update(
             { coverChar },
             { where: { id } }
         );
 
-        if (updatedCount === 0) {
+        const exist = await Work.findOne({ where: { id } });
+        if (!exist) {
             return res.status(404).send({ error: `Work with ID ${id} not found.` });
         }
 

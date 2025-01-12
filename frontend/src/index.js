@@ -1,7 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
-import { AppProvider } from './AppContext'; 
+import { Provider } from 'react-redux';
+import store from './store';
 import config from './config';
 
 import App from './App';
@@ -21,10 +22,10 @@ setGlobalCSSVariables();
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <AppProvider>
+    <Provider store={store}>
       <BrowserRouter>
         <App />
       </BrowserRouter>
-    </AppProvider>
+    </Provider>
   </React.StrictMode>
 );

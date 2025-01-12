@@ -6,6 +6,7 @@ const {
     deleteChapter,
     createChapterDetail,
     getChapterDetails,
+    getChapterDetail,
     deleteChapterDetail,
     updateChapterCover,
     updateChapterTitle,
@@ -24,6 +25,7 @@ router.put('/:id/title', updateChapterTitle);
 // Chapter details
 router.post('/details', createChapterDetail);
 router.get('/details/:chapter_id', getChapterDetails);
+router.get('/details/one/:id', getChapterDetail);
 router.delete('/details/:id', deleteChapterDetail);
 router.put('/details/:id', updateChapterDetail);
 

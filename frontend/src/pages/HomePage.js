@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import FrontTopBar from './components/FrontTopBar';
-import { useAppContext } from '../AppContext';
+import { useSelector } from 'react-redux';
 import config from '../config';
 import WorkItem from './components/WorkItem';
 import '../style.css';
 
 
 const HomePage = ({ isEnglish }) => {
-  const { homeTitle } = useAppContext();
+  const homeTitle = useSelector((state) => state.homeTitle);
   const [workList, setWorkList] = useState([]);
   const navigate = useNavigate(); 
   const location = useLocation();
 
   useEffect(() => {
+    console.log(homeTitle)
     const fetchData = async () => {
       try {
         const response = await fetch(`${config.backendUrl}/api/works`);
