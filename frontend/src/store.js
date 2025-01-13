@@ -3,7 +3,7 @@ import { configureStore, createSlice } from '@reduxjs/toolkit';
 
 const homeTitleSlice = createSlice({
     name: 'homeTitle',
-    initialState: { title: '魔法风火轮', title_en: 'MAGIC CHARIOT' },
+    initialState: { title: '魔法风火轮 - 原创', title_en: 'MAGIC CHARIOT - ORIGINAL' },
     reducers: {
         updateTitle(state, action) {
             state.title = action.payload.title;

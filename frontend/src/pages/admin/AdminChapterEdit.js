@@ -536,7 +536,7 @@ const AdminChapterEdit = () => {
               {detailList.map((item, index) => (
                   <EditItem
                       key={item.id}
-                      text={`${item.content_type}${index}`}
+                      text={`${item.content_type}${index+1}`}
                       editClick={() => handleEditDetail(item.id)}
                       deleteClick={() => handleDelete(item.id)}
                   />

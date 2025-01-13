@@ -537,7 +537,7 @@ const AdminCharacterEdit = () => {
               {detailList.map((item, index) => (
                   <EditItem
                       key={item.id}
-                      text={`${item.detail_type}${index}`}
+                      text={`${item.detail_type}${index+1}`}
                       editClick={() => handleEditDetail(item.id)}
                       deleteClick={() => handleDelete(item.id)}
                   />

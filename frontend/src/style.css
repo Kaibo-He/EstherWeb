@@ -91,12 +91,12 @@
 .work-container {
   position: relative;
   width: 1000px; /* 矩形宽度 */
-  height: 85px; /* 矩形高度 */
+  height: 180px; /* 矩形高度 */
   background-color: white; /* 背景色（可选） */
   display: flex;
   justify-content: space-between;
   overflow: hidden;
-  margin-bottom: 20px;
+  margin-bottom: 50px;
   border-radius: 10px;
   border: 0;
 }

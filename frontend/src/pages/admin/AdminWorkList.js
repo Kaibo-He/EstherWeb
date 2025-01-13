@@ -86,7 +86,7 @@ const AdminWorkList = () => {
     const handleCropConfirm = async () => {
       if (!cropData.croppedAreaPixels) return;
       try {
-          const croppedBlob = await getCroppedImg(cropData.imageSrc, cropData.croppedAreaPixels, 750, 90);
+          const croppedBlob = await getCroppedImg(cropData.imageSrc, cropData.croppedAreaPixels, 750, 180);
           const croppedFile = new File([croppedBlob], `${cropData.cropType}.png`, { type: 'image/png' });
           console.log(croppedFile)
           setFormData((prev) => ({
@@ -291,7 +291,7 @@ const AdminWorkList = () => {
         }
       }
     }
-
+    
     return (
       <div className='listPage-container'>
           <button id='single1' className='small-button' onClick={handleAddWork}>新建作品</button>
@@ -413,9 +413,9 @@ const AdminWorkList = () => {
                           image={cropData.imageSrc}
                           crop={cropData.crop}
                           zoom={cropData.zoom}
-                          maxZoom={10}
-                          aspect={750 / 90} // 固定比例
-                          cropSize={{ width: 450, height: 54 }}
+                          maxZoom={100}
+                          aspect={750 / 180} // 固定比例
+                          cropSize={{ width: 450, height: 108 }}
                           onCropChange={(crop) => setCropData((prev) => ({ ...prev, crop }))}
                           onZoomChange={(zoom) => setCropData((prev) => ({ ...prev, zoom }))}
                           onCropComplete={(croppedArea, croppedAreaPixels) => setCropData((prev) => ({ ...prev, croppedAreaPixels }))}
