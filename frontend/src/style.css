@@ -359,3 +359,24 @@
 .big-button:hover {
   background-color: grey;
 }
+
+.pagination {
+  display: flex;
+  align-items: center;
+}
+
+.pagination .image-button {
+  border: none;
+}
+
+.pagination span {
+  font-family: var(--font-sys);
+  font-weight: bold;
+  font-size: var(--fontSize-xs);
+}
+
+.image-button.disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+  pointer-events: none; /* 禁用点击事件 */
+}

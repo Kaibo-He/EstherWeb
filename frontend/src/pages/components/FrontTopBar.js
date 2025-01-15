@@ -78,10 +78,38 @@ const FrontTopBar = ({ isEnglish, showBack, backUrl }) => {
 
   return (
     <div className='front-topBar'>
-        <div className="image-button" onClick={() => navigate('/')}>
+        <div className="image-button" onClick={() => {
+          navigate('/')
+          for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key.startsWith('chapter_')) { // 移除所有以 'chapter_' 开头的键
+                localStorage.removeItem(key);
+            }
+          }
+          for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key.startsWith('character_')) { // 移除所有以 'chapter_' 开头的键
+                localStorage.removeItem(key);
+            }
+          }
+          }}>
           <img src="/assest/image/home.png" alt="Button" />
         </div>
-        {showBack && <div className="image-button" onClick={() => navigate(backUrl)}>
+        {showBack && <div className="image-button" onClick={() => {
+          navigate(backUrl)
+          for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key.startsWith('chapter_')) { // 移除所有以 'chapter_' 开头的键
+                localStorage.removeItem(key);
+            }
+          }
+          for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key.startsWith('character_')) { // 移除所有以 'chapter_' 开头的键
+                localStorage.removeItem(key);
+            }
+          }
+          }}>
           <img src="/assest/image/back.png" alt="Button" />
         </div>}
         <div className="image-button" 

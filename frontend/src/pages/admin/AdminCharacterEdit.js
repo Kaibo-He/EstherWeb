@@ -43,22 +43,29 @@ const AdminCharacterEdit = () => {
       }, []);
 
     const handleAddDetail = () => {
-      setFormData({ detail: '', detail_en: '', detail_type: '' });
+      setFormData({ content: '', content_en: '', content_type: '' });
       setShowCreate(true);
     }
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await fetch(`${config.backendUrl}/api/characters/one/${character_id}`);
-                const data = await response.json();
-                setCurrentCharacter(data);
-            } catch (error) {
-                console.error('Failed to fetch data:', error);
-            }
-        };
-        fetchData();
+      fetchCurrentCharacter();
     }, []);
+
+    const fetchCurrentCharacter = async () => {
+      try {
+        const response = await fetch(`${config.backendUrl}/api/characters/one/${character_id}`);
+        const data = await response.json();
+        setCurrentCharacter(data);
+        setFormData({
+          ...formData,
+          title: data.name,
+          title_en: data.name_en,
+          page: (data.page || []).join(', ')
+        });
+    } catch (error) {
+        console.error('Failed to fetch data:', error);
+    }
+    }
 
     const handleDelete = (id) => {
         setDeleteId(id);
@@ -68,7 +75,8 @@ const AdminCharacterEdit = () => {
     const confirmDelete = () => {
         deleteData();
         deleteFile('');
-        deleteFile('-en')
+        deleteFile('-en');
+        setPage(character_id, 'delete');
         setShowConfirm(false); // 关闭弹窗
         setDeleteId(null); // 清空待删除 ID
     };
@@ -102,7 +110,7 @@ const AdminCharacterEdit = () => {
         }
         
         if (input) {
-            (isEn) ? setFormData({...formData, detail_en: input, detail_type: type}) : setFormData({...formData, detail: input, detail_type: type})
+            (isEn) ? setFormData({...formData, content_en: input, content_type: type}) : setFormData({...formData, content: input, content_type: type})
         }
       };
 
@@ -219,7 +227,7 @@ const AdminCharacterEdit = () => {
         const body = {
             detail: path1,
             detail_en: path2,
-            detail_type: formData.detail_type,
+            detail_type: formData.content_type,
         }
         try {
             const response = await fetch(`${config.backendUrl}/api/characters/details/${id}`, {
@@ -255,6 +263,7 @@ const AdminCharacterEdit = () => {
           },
           body: JSON.stringify(body), // 将对象转换为 JSON 字符串
         });
+        setCurrentCharacter({...currentCharacter, cover: path});
         console.log(response)
         if (!response.ok) {
           const errorData = await response.json();
@@ -269,8 +278,8 @@ const AdminCharacterEdit = () => {
 
     const setName = async (id) => {
         const body = {
-          name: formData.name,
-          name_en: formData.name_en
+          name: formData.title,
+          name_en: formData.title_en
         }
         console.log(body)
         try {
@@ -291,7 +300,6 @@ const AdminCharacterEdit = () => {
           console.error('Error setting name:', error.message);
           throw error;
         }
-  
       }
 
     const handleEditDetail = (id) => {
@@ -301,15 +309,15 @@ const AdminCharacterEdit = () => {
     }
 
     const createDetail = () => {
-        if (!formData.detail_type || !formData.detail) {
+        if (!formData.content_type || !formData.content) {
             alert('中文内容不能为空！')
             return}; 
-        if (formData.detail_type === 'image' || formData.detail_type === 'video') {
-            const file = formData.detail;
-            const file_en = formData.detail_en;
+        if (formData.content_type === 'image' || formData.content_type === 'video') {
+            const file = formData.content;
+            const file_en = formData.content_en;
             let path_ch = '';
             let path_en = '';
-            uploadDetail('default', '', formData.detail_type).then((id) => {
+            uploadDetail('default', '', formData.content_type).then((id) => {
                 uploadDetailFile(id, file, false).then((path) => {
                     path_ch = path.replace(/\\/g, '/').replace(/^uploads\//, '');
                     setDetail(id, path_ch, path_en)
@@ -321,9 +329,12 @@ const AdminCharacterEdit = () => {
                         setDetail(id, path_ch, path_en)
                     })
                 }
+                setPage(character_id, 'new');
             })
         } else {
-            uploadDetail(formData.detail, formData.detail_en, formData.detail_type);
+          uploadDetail(formData.content, formData.content_en, formData.content_type).then(() => {
+            setPage(character_id,'new');
+          });
         }
     }
 
@@ -360,27 +371,83 @@ const AdminCharacterEdit = () => {
         }
     }
 
-    const editCharacter = () => {
-        console.log(formData.name)
-        if (formData.name) {
-          setShowEdit(false);
+    const editCharacter = async () => {
+        console.log(formData)
+        if (formData.title) {
           setName(character_id);
           if (formData.cover) {
             uploadFile(character_id, 'cover').then((path) => {
               setCover(character_id, path.replace(/\\/g, '/').replace(/^uploads\//, ''));
             });
           }
+          if (formData.page) {
+            setPage(character_id, 'edit');
+          }
+          await fetchCurrentCharacter();
+          setShowEdit(false);
         } else {
-            alert('请输入标题！')
+            alert('请输入名字！')
             return
         }
       }
+
+      const setPage = async (id, type) => {
+        if (!currentCharacter.page && type === 'new') {
+          return
+        }
+
+        let pageArray = [];
+        if (type === 'new') {
+          const pageNow = currentCharacter.page;
+          pageNow[pageNow.length - 1] += 1;
+          pageArray = pageNow;
+        } else if (type === 'delete') {
+          const pageNow = currentCharacter.page;
+          if (pageNow[pageNow.length - 1] === 1) {
+            pageNow.pop();
+          } else {
+            pageNow[pageNow.length - 1] -= 1;
+          }
+          pageArray = pageNow;
+        } else {
+          pageArray = formData.page.split(/[\s,]+/).map(Number).filter((num) => !isNaN(num));
+          if (pageArray.reduce((sum, num) => sum + num, 0) !== detailList.length) {
+            alert('分页数据不正确，请确保所有数字之和等于内容总数！');
+            return;
+          }
+        }
+    
+        try {
+          await fetch(`${config.backendUrl}/api/characters/${id}/page`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ page: pageArray }),
+          });
+          setCurrentCharacter({...currentCharacter, page: pageArray})
+        } catch (error) {
+          console.error('Failed to update page:', error);
+        }
+      };    
+
+      const clearPage = async () => {
+        try {
+          await fetch(`${config.backendUrl}/api/characters/${character_id}/page`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ page: [] }),
+          });
+          alert('分页已清空！');
+          setFormData({...formData, page: ''});
+        } catch (error) {
+          console.error('Failed to clear page:', error);
+        }
+      };
 
     const handleChange = (event) => {
         setSelectedValue(event.target.value);
         setFormData({
             ...formData,
-            detail_type: event.target.value
+            content_type: event.target.value
         })
     };
       
@@ -476,35 +543,35 @@ const AdminCharacterEdit = () => {
     const editDetail = () => {
         let path_ch = '';
         let path_en = '';
-        let finaldetail = formData.detail;
-        let finaldetail_en = formData.detail_en;
+        let finaldetail = formData.content;
+        let finaldetail_en = formData.content_en;
         console.log(currentDetail)
         console.log(formData)
 
-        if (formData.detail_type === currentDetail.detail_type) {
+        if (formData.content_type === currentDetail.content_type) {
             
-            if (!formData.detail) {
-                finaldetail = currentDetail.detail;
+            if (!formData.content) {
+                finaldetail = currentDetail.content;
             }
-            if (!formData.detail_en) {
-                finaldetail_en = currentDetail.detail_en;
+            if (!formData.content_en) {
+                finaldetail_en = currentDetail.content_en;
             }
         } else {
-            if (!formData.detail) {
+            if (!formData.content) {
                 alert('内容类型发生改变，中文内容不能为空！')
                 return
             }
         }
 
-        if (formData.detail_type === 'image' || formData.detail_type === 'video') {
-            if (formData.detail) {
+        if (formData.content_type === 'image' || formData.content_type === 'video') {
+            if (formData.content) {
                 uploadDetailFile(currentId, finaldetail, false).then((path) => {
                     path_ch = path.replace(/\\/g, '/').replace(/^uploads\//, '');
                     setDetail(currentId, path_ch, path_en)
                 })
             }
 
-            if (formData.detail_en) {
+            if (formData.content_en) {
                 uploadDetailFile(currentId, finaldetail_en, true).then((path) => {
                     path_en = path.replace(/\\/g, '/').replace(/^uploads\//, '')
                     setDetail(currentId, path_ch || finaldetail, path_en)
@@ -516,11 +583,15 @@ const AdminCharacterEdit = () => {
     }
 
     const handleEditCharacter = () => {
+        fetchCurrentCharacter();
+        console.log(currentCharacter.name)
+        console.log(formData)
         if (currentCharacter) {
             setFormData({
-                name: currentCharacter.name,
-                name_en: currentCharacter.name_en,
-                cover: null
+                title: currentCharacter.name,
+                title_en: currentCharacter.name_en,
+                cover: null,
+                page: currentCharacter.page.join(',')
             })
             setShowEdit(true)
         }
@@ -606,16 +677,16 @@ const AdminCharacterEdit = () => {
                       <input
                           type="text"
                           name="name"
-                          value={formData.name}
-                          onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
+                          value={formData.title}
+                          onChange={(e) => setFormData((prev) => ({ ...prev, title: e.target.value }))}
                           placeholder="角色姓名"
                           className="text-input"
                       />
                       <input
                           type="text"
                           name="name_en"
-                          value={formData.name_en}
-                          onChange={(e) => setFormData((prev) => ({ ...prev, name_en: e.target.value }))}
+                          value={formData.title_en}
+                          onChange={(e) => setFormData((prev) => ({ ...prev, title_en: e.target.value }))}
                           placeholder="英文姓名"
                           className="text-input"
                       />
@@ -628,6 +699,18 @@ const AdminCharacterEdit = () => {
                           className="file-input"
                       />
                       </div>
+                      <div className='createWork-upload'>
+                        <label>编辑分页</label>
+                      <input
+                          type="text"
+                          name="page"
+                          value={formData.page}
+                          onChange={(e) => setFormData((prev) => ({ ...prev, page: e.target.value }))}
+                          placeholder="请输入分页信息，用逗号或空格分隔"
+                          className="text-input"
+                      />
+                      </div>
+                      <button className="small-button" onClick={clearPage}>清空分页</button>
                       <div className="createWork-buttons">
                           <button className="small-button" onClick={editCharacter}>确认</button>
                           <button className="small-button" onClick={() => setShowEdit(false)}>取消</button>

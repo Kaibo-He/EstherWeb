@@ -117,11 +117,13 @@ const AdminCharacterList = () => {
     };
 
     const uploadCharacter = async () => {
+      console.log(formData)
       const body = {
         work_id: work_id,
         name: formData.title,
         name_en: formData.title_en
       }
+      console.log(body)
       try {
           const response = await fetch(`${config.backendUrl}/api/characters`, {
               method: 'POST',
@@ -136,7 +138,7 @@ const AdminCharacterList = () => {
               setShowCreate(false);
               return newWork.id;
           }
-          alert('请输入标题')
+          alert('请输入名字')
       } catch (error) {
           console.error('Error creating work:', error);
       }

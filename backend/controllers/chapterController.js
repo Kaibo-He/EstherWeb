@@ -29,7 +29,6 @@ const getChaptersByWork = async (req, res) => {
 
         const chapters = await Chapter.findAll({
             where: { work_id },
-            attributes: ['id', 'title', 'title_en', 'cover'], // 仅返回需要的字段
             order: [['id', 'ASC']],
         });
 
@@ -43,8 +42,7 @@ const getChapter = async (req, res) => {
     try {
       const { id } = req.params;
       const chapter = await Chapter.findOne({
-        where: { id },
-        attributes: ['id', 'title', 'title_en', 'cover']
+        where: { id }
       })
   
       if (!chapter) {
@@ -102,8 +100,7 @@ const getChapterDetail = async (req, res) => {
     try {
       const { id} = req.params;
       const chapterDetail = await ChapterDetail.findOne({
-        where: { id },
-        attributes: ['id', 'content', 'content_en', 'content_type']
+        where: { id }
       })
   
       if (!chapterDetail) {
@@ -216,6 +213,31 @@ const updateChapterDetail = async (req, res) => {
     }
 };
 
+const updateChapterPage = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { page } = req.body;
+
+        if (!Array.isArray(page)) {
+            return res.status(400).send({ error: "Invalid format: 'page' must be an array of integers." });
+        }
+
+        const [updatedCount] = await Chapter.update(
+            { page },
+            { where: { id } }
+        );
+
+        const exist = await Chapter.findOne({ where: { id } });
+        if (!exist) {
+            return res.status(404).send({ error: `Chapter with ID ${id} not found.` });
+        }
+
+        res.send({ message: "Chapter page updated successfully.", page });
+    } catch (error) {
+        res.status(500).send({ error: error.message });
+    }
+};
+
 module.exports = {
     createChapter,
     getChaptersByWork,
@@ -227,5 +249,6 @@ module.exports = {
     deleteChapterDetail,
     updateChapterCover,
     updateChapterTitle,
-    updateChapterDetail
+    updateChapterDetail,
+    updateChapterPage
 };

@@ -10,7 +10,8 @@ const {
     deleteChapterDetail,
     updateChapterCover,
     updateChapterTitle,
-    updateChapterDetail
+    updateChapterDetail,
+    updateChapterPage
 } = require('../controllers/chapterController');
 
 const router = express.Router();
@@ -21,6 +22,7 @@ router.get('/one/:id', getChapter);
 router.delete('/:id', deleteChapter);
 router.put('/:id/cover', updateChapterCover);
 router.put('/:id/title', updateChapterTitle);
+router.put('/:id/page', updateChapterPage);
 
 // Chapter details
 router.post('/details', createChapterDetail);

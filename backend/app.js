@@ -133,7 +133,6 @@ app.put('/api/upload', (req, res) => {
     });
   });
   
-  
 // DELETE /api/upload: 删除指定路径以及下面的文件
 app.delete('/api/upload', (req, res) => {
     const form = new multiparty.Form();
@@ -173,6 +172,7 @@ app.delete('/api/upload', (req, res) => {
 
 // DELETE /api/upload/one：删除指定文件
 app.delete('/api/upload/one', (req, res) => {
+    console.log('DELETE request received:', req.body);
     const form = new multiparty.Form();
   
     form.parse(req, (err, fields) => {

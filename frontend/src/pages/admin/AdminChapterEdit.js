@@ -43,22 +43,29 @@ const AdminChapterEdit = () => {
       }, []);
 
     const handleAddDetail = () => {
-      setFormData({ content: '', content_en: '', content_type: '' });
+      setFormData({ content: '', content_en: '', content_type: ''});
       setShowCreate(true);
     }
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await fetch(`${config.backendUrl}/api/chapters/one/${chapter_id}`);
-                const data = await response.json();
-                setCurrentChapter(data);
-            } catch (error) {
-                console.error('Failed to fetch data:', error);
-            }
-        };
-        fetchData();
+      fetchCurrentChapter();
     }, []);
+
+    const fetchCurrentChapter = async () => {
+      try {
+        const response = await fetch(`${config.backendUrl}/api/chapters/one/${chapter_id}`);
+        const data = await response.json();
+        setCurrentChapter(data);
+        setFormData({
+          ...formData,
+          title: data.title,
+          title_en: data.title_en,
+          page: (data.page || []).join(', ')
+        });
+    } catch (error) {
+        console.error('Failed to fetch data:', error);
+    }
+    }
 
     const handleDelete = (id) => {
         setDeleteId(id);
@@ -68,7 +75,8 @@ const AdminChapterEdit = () => {
     const confirmDelete = () => {
         deleteData();
         deleteFile('');
-        deleteFile('-en')
+        deleteFile('-en');
+        setPage(chapter_id, 'delete');
         setShowConfirm(false); // 关闭弹窗
         setDeleteId(null); // 清空待删除 ID
     };
@@ -255,6 +263,7 @@ const AdminChapterEdit = () => {
           },
           body: JSON.stringify(body), // 将对象转换为 JSON 字符串
         });
+        setCurrentChapter({...currentChapter, cover: path});
         console.log(response)
         if (!response.ok) {
           const errorData = await response.json();
@@ -281,7 +290,7 @@ const AdminChapterEdit = () => {
             },
             body: JSON.stringify(body), // 将对象转换为 JSON 字符串
           });
-  
+          setCurrentChapter({...currentChapter, title: formData.title, title_en: formData.title_en})
           if (!response.ok) {
             const errorData = await response.json();
             console.error('Upload title failed:', errorData);
@@ -291,7 +300,6 @@ const AdminChapterEdit = () => {
           console.error('Error setting title:', error.message);
           throw error;
         }
-  
       }
 
     const handleEditDetail = (id) => {
@@ -321,9 +329,12 @@ const AdminChapterEdit = () => {
                         setDetail(id, path_ch, path_en)
                     })
                 }
+                setPage(chapter_id, 'new');
             })
         } else {
-            uploadDetail(formData.content, formData.content_en, formData.content_type);
+            uploadDetail(formData.content, formData.content_en, formData.content_type).then(() => {
+              setPage(chapter_id,'new');
+            });
         }
     }
 
@@ -360,20 +371,77 @@ const AdminChapterEdit = () => {
         }
     }
 
-    const editChapter = () => {
+    const editChapter = async () => {
+        console.log(formData)
         if (formData.title) {
-          setShowEdit(false);
           setTitle(chapter_id);
           if (formData.cover) {
             uploadFile(chapter_id, 'cover').then((path) => {
               setCover(chapter_id, path.replace(/\\/g, '/').replace(/^uploads\//, ''));
             });
           }
+          if (formData.page) {
+            setPage(chapter_id, 'edit');
+          }
+          await fetchCurrentChapter();
+          setShowEdit(false);
         } else {
             alert('请输入标题！')
             return
         }
       }
+
+      const setPage = async (id, type) => {
+        if (!currentChapter.page && type === 'new') {
+          return
+        }
+
+        let pageArray = [];
+        if (type === 'new') {
+          const pageNow = currentChapter.page;
+          pageNow[pageNow.length - 1] += 1;
+          pageArray = pageNow;
+        } else if (type === 'delete') {
+          const pageNow = currentChapter.page;
+          if (pageNow[pageNow.length - 1] === 1) {
+            pageNow.pop();
+          } else {
+            pageNow[pageNow.length - 1] -= 1;
+          }
+          pageArray = pageNow;
+        } else {
+          pageArray = formData.page.split(/[\s,]+/).map(Number).filter((num) => !isNaN(num));
+          if (pageArray.reduce((sum, num) => sum + num, 0) !== detailList.length) {
+            alert('分页数据不正确，请确保所有数字之和等于内容总数！');
+            return;
+          }
+        }
+    
+        try {
+          await fetch(`${config.backendUrl}/api/chapters/${id}/page`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ page: pageArray }),
+          });
+          setCurrentChapter({...currentChapter, page: pageArray})
+        } catch (error) {
+          console.error('Failed to update page:', error);
+        }
+      };
+
+      const clearPage = async () => {
+        try {
+          await fetch(`${config.backendUrl}/api/chapters/${chapter_id}/page`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ page: [] }),
+          });
+          alert('分页已清空！');
+          setFormData({...formData, page: ''});
+        } catch (error) {
+          console.error('Failed to clear page:', error);
+        }
+      };
 
     const handleChange = (event) => {
         setSelectedValue(event.target.value);
@@ -515,11 +583,13 @@ const AdminChapterEdit = () => {
     }
 
     const handleEditChapter = () => {
+      fetchCurrentChapter();
         if (currentChapter) {
             setFormData({
                 title: currentChapter.title,
                 title_en: currentChapter.title_en,
-                cover: null
+                cover: null,
+                page: currentChapter.page.join(',')
             })
             setShowEdit(true)
         }
@@ -627,6 +697,18 @@ const AdminChapterEdit = () => {
                           className="file-input"
                       />
                       </div>
+                      <div className='createWork-upload'>
+                        <label>编辑分页</label>
+                      <input
+                          type="text"
+                          name="page"
+                          value={formData.page}
+                          onChange={(e) => setFormData((prev) => ({ ...prev, page: e.target.value }))}
+                          placeholder="请输入分页信息，用逗号或空格分隔"
+                          className="text-input"
+                      />
+                      </div>
+                      <button className="small-button" onClick={clearPage}>清空分页</button>
                       <div className="createWork-buttons">
                           <button className="small-button" onClick={editChapter}>确认</button>
                           <button className="small-button" onClick={() => setShowEdit(false)}>取消</button>

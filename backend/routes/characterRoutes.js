@@ -10,7 +10,8 @@ const {
     deleteCharacterDetail,
     updateCharacterCover,
     updateCharacterName,
-    updateCharacterDetail
+    updateCharacterDetail,
+    updateCharacterPage
 } = require('../controllers/characterController');
 
 const router = express.Router();
@@ -21,6 +22,7 @@ router.get('/one/:id', getCharacter);
 router.delete('/:id', deleteCharacter);
 router.put('/:id/cover', updateCharacterCover);
 router.put('/:id/name', updateCharacterName);
+router.put('/:id/page', updateCharacterPage);
 
 // Character details
 router.post('/details', createCharacterDetail);

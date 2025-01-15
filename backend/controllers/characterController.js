@@ -219,6 +219,31 @@ const updateCharacterDetail = async (req, res) => {
     }
 };
 
+const updateCharacterPage = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { page } = req.body;
+
+        if (!Array.isArray(page)) {
+            return res.status(400).send({ error: "Invalid format: 'page' must be an array of integers." });
+        }
+
+        const [updatedCount] = await Character.update(
+            { page },
+            { where: { id } }
+        );
+
+        const exist = await Character.findOne({ where: { id } });
+        if (!exist) {
+            return res.status(404).send({ error: `Character with ID ${id} not found.` });
+        }
+
+        res.send({ message: "Character page updated successfully.", page });
+    } catch (error) {
+        res.status(500).send({ error: error.message });
+    }
+};
+
 module.exports = {
     createCharacter,
     getCharactersByWork,
@@ -230,5 +255,6 @@ module.exports = {
     deleteCharacterDetail,
     updateCharacterCover,
     updateCharacterName,
-    updateCharacterDetail
+    updateCharacterDetail,
+    updateCharacterPage
 };
