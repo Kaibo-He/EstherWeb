@@ -1,3 +1,55 @@
+body {
+  touch-action: manipulation;
+}
+
+@media screen and (max-width: 768px) {
+  body {
+    font-size: 14px;
+  }
+  .container {
+    width: 100%;
+    padding: 10px;
+  }
+  .nav-bar {
+    flex-direction: column;
+    align-items: center;
+  }
+  .nav-item {
+    font-size: 12px;
+  }
+}
+
+/* 适配图片、视频 */
+img, video {
+  max-width: 100%;
+  height: auto;
+}
+
+/* 适配布局 */
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+@media (max-width: 600px) {
+  .container {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+/* 适配字体 */
+.title {
+  font-size: 2rem;
+}
+
+@media (max-width: 768px) {
+  .title {
+    font-size: 1.5rem;
+  }
+}
+
 .front-topBar {
   display: flex; /* 使用 flexbox */
   align-items: center; /* 垂直方向居中对齐 */
@@ -90,7 +142,8 @@
 /*Work item*/
 .work-container {
   position: relative;
-  width: 1000px; /* 矩形宽度 */
+  width: 100%;
+  max-width: 1000px; /* 矩形宽度 */
   height: 180px; /* 矩形高度 */
   background-color: white; /* 背景色（可选） */
   display: flex;
@@ -109,6 +162,7 @@
   font-size: 16px;
   cursor: pointer;
   background-repeat: no-repeat;
+  background-position: center;
   transition: transform 0.3s ease; /* 添加过渡效果 */
 }
 
@@ -127,7 +181,7 @@
   content: attr(data-text); /* 使用 data-text 属性插入文字 */
   position: absolute;
   top: 10px; /* 距离顶部 10px */
-  right: 120px; /* 距离右边 10px */
+  right: 10%; /* 距离右边 10px */
   color: black;
   font-size: var(--fontSize-s);
   font-weight: bold;
@@ -139,7 +193,7 @@
   content: attr(data-text); /* 使用 data-text 属性插入文字 */
   position: absolute;
   bottom: 10px; /* 距离顶部 10px */
-  left: 150px; /* 距离右边 10px */
+  left: 20%; /* 距离右边 10px */
   color: black;
   font-size: var(--fontSize-s);
   font-weight: bold;
@@ -170,6 +224,7 @@
 .cha-title{
   display: flex;
   align-items: flex-end;
+  justify-content: center;
   margin-bottom: 50px;
   margin-top: 50px;
 }
@@ -187,6 +242,10 @@
 }
 
 .chaList-container {
+  text-align: center;
+}
+
+.chaDetailList-container {
   display: flex;
   justify-content: center; /* 水平居中 */
   align-items: flex-start; /* 保持列表从顶部开始排列 */
@@ -196,23 +255,19 @@
   padding: 20px;
 }
 
-.chaList-container{
-  text-align: center;
-}
-
+/*Cha item*/
 .cha-container {
   position: relative;
-  width: 1000px; /* 矩形宽度 */
+  width: 100%;
+  max-width: 1000px; /* 矩形宽度 */
   height: 85px; /* 矩形高度 */
+  background-color: white; /* 背景色（可选） */
   display: flex;
   justify-content: space-between;
   overflow: hidden;
-  margin-bottom: 20px;
-  border: 0;
+  margin-bottom: 50px;
   border-radius: 10px;
-  background-repeat: no-repeat; 
-  overflow: hidden;
-  transition: transform 0.3s ease;
+  border: 0;
 }
 
 .cha-button {
@@ -224,6 +279,7 @@
   font-size: 16px;
   cursor: pointer;
   background-repeat: no-repeat;
+  background-position: center;
   transition: transform 0.3s ease; /* 添加过渡效果 */
 }
 
@@ -231,7 +287,7 @@
   content: attr(data-text); /* 使用 data-text 属性插入文字 */
   position: absolute;
   top: 50%; /* 距离顶部 10px */
-  left: 50px; /* 距离右边 10px */
+  left: 5%; /* 距离右边 10px */
   color: black;
   font-size: var(--fontSize-m);
   font-weight: bold;
@@ -358,4 +414,25 @@
 
 .big-button:hover {
   background-color: grey;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+}
+
+.pagination .image-button {
+  border: none;
+}
+
+.pagination span {
+  font-family: var(--font-sys);
+  font-weight: bold;
+  font-size: var(--fontSize-xs);
+}
+
+.image-button.disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+  pointer-events: none; /* 禁用点击事件 */
 }

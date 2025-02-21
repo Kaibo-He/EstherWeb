@@ -41,6 +41,14 @@ module.exports = (sequelize) => {
         type: DataTypes.STRING,
         defaultValue: 'uploads/default.png'
       },
+      music: {
+        type: DataTypes.STRING,
+        defaultValue: null
+      },
+      ui: {
+        type: DataTypes.STRING,
+        defaultValue: null
+      },
       created_at: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,

@@ -1,33 +1,28 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { updateTitle } from '../../store';
 import config from '../../config';
 import './admin.css';
 
 const AdminGeneral = () => {
+  const token = localStorage.getItem('token');
   const [newMusicFile, setNewMusicFile] = useState(null); // 上传的新音乐文件
   const [audioUrl, setAudioUrl] = useState(''); // 当前背景音乐的 URL
-
-  const [currentTitle, setCurrentTitle] = useState({}); // 当前标题
-  const homeTitle = useSelector((state) => state.homeTitle);
-  const dispatch = useDispatch();
-
-  const [newTitle, setNewTitle] = useState(homeTitle.title); // 新标题
-  const [newTitleEn, setNewTitleEn] = useState(homeTitle.title_en); // 新英文标题
-  const [isEditingTitle, setIsEditingTitle] = useState(false); // 标题编辑状态
-  
   const audioRef = useRef(null);
 
-  useEffect(() => {
+  // 获取最新音乐 URL（防止缓存）
+  const updateAudioUrl = () => {
     setAudioUrl(`${config.backendUrl}/uploads/music.mp3?t=${Date.now()}`);
-    setCurrentTitle();
+  };
+
+  useEffect(() => {
+    updateAudioUrl();
+    /* setCurrentTitle(); */
   }, []);
 
   const handleMusicUpload = async () => {
     if (!newMusicFile) {
-        alert('请选择要上传的音乐文件');
-        return;
-      }
+      alert('请选择要上传的音乐文件');
+      return;
+    }
     // 创建 FormData 对象
     const formData = new FormData();
     formData.append('file', newMusicFile); // 将文件添加到 FormData
@@ -36,29 +31,30 @@ const AdminGeneral = () => {
     try {
       const response = await fetch(`${config.backendUrl}/api/upload`, {
         method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
         body: formData,
       });
-      setAudioUrl(`${config.backendUrl}/uploads/music.mp3`);
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || '上传失败');
+      }
+
+      // 重新加载音频
+      updateAudioUrl();
+
       if (audioRef.current) {
         audioRef.current.load();
       }
+
       alert('音乐上传成功');
     } catch (error) {
       console.error('Failed to upload music:', error);
       alert('音乐上传失败');
     }
   };
-
-  const handleTitleSave = async () => {
-    if (!newTitle || !newTitleEn) {
-        alert('标题不能为空');
-        return;
-    }
-    // 更新 Redux 全局状态
-    dispatch(updateTitle({ title: newTitle, title_en: newTitleEn }));
-    setIsEditingTitle(false); // 退出编辑模式
-  };
-
+  
   return (
     <div className='general-container'>
       {/* 当前音乐播放器 */}

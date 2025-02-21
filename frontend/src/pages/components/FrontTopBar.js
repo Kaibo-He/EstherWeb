@@ -51,7 +51,6 @@ const FrontTopBar = ({ isEnglish, showBack, backUrl }) => {
 
     const disablePageScroll = useCallback((event) => {
       event.preventDefault(); // 阻止页面滚动
-      console.log('Page scroll disabled');
     }, []);
 
     // 鼠标悬停时显示音量条并设置其位置
@@ -59,7 +58,6 @@ const FrontTopBar = ({ isEnglish, showBack, backUrl }) => {
       setShowVolumeBar(true); // 显示音量条
       setVolumeBarPosition({ x: event.clientX, y: event.clientY }); // 设置音量条位置
       window.addEventListener('wheel', disablePageScroll, { passive: false });
-      console.log('Wheel event added');
     };
   
     // 鼠标移动时更新音量条位置
@@ -73,15 +71,42 @@ const FrontTopBar = ({ isEnglish, showBack, backUrl }) => {
     const handleMouseLeave = () => {
       setShowVolumeBar(false); // 隐藏音量条
       window.removeEventListener('wheel', disablePageScroll, { passive: true });
-      console.log('Wheel event removed');
     };    
 
   return (
     <div className='front-topBar'>
-        <div className="image-button" onClick={() => navigate('/')}>
+        <div className="image-button" onClick={() => {
+          navigate('/')
+          for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key.startsWith('chapter_')) { // 移除所有以 'chapter_' 开头的键
+                localStorage.removeItem(key);
+            }
+          }
+          for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key.startsWith('character_')) { // 移除所有以 'chapter_' 开头的键
+                localStorage.removeItem(key);
+            }
+          }
+          }}>
           <img src="/assest/image/home.png" alt="Button" />
         </div>
-        {showBack && <div className="image-button" onClick={() => navigate(backUrl)}>
+        {showBack && <div className="image-button" onClick={() => {
+          navigate(backUrl)
+          for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key.startsWith('chapter_')) { // 移除所有以 'chapter_' 开头的键
+                localStorage.removeItem(key);
+            }
+          }
+          for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key.startsWith('character_')) { // 移除所有以 'chapter_' 开头的键
+                localStorage.removeItem(key);
+            }
+          }
+          }}>
           <img src="/assest/image/back.png" alt="Button" />
         </div>}
         <div className="image-button" 

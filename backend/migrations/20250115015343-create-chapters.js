@@ -3,7 +3,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
-    await queryInterface.createTable('Characters', {
+    await queryInterface.createTable('Chapters', {
       id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
@@ -18,26 +18,31 @@ module.exports = {
         },
         onDelete: 'CASCADE',
       },
-      name: {
+      title: {
         type: Sequelize.STRING,
-        defaultValue: '未命名角色'
+        defaultValue: '未命名章节'
       },
-      name_en: {
+      title_en: {
         type: Sequelize.STRING,
-        defaultValue: 'Untiteld Character'
+        defaultValue: 'Untitled Chapter'
       },
       cover: {
         type: Sequelize.STRING,
-        defaultValue: 'default.png',
+        defaultValue: 'default.png'
       },
       created_at: {
         type: Sequelize.DATE,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
       },
+      page: {
+      type: Sequelize.JSON,
+      allowNull: false,
+      defaultValue: [],
+      }
     });
   },
 
   async down (queryInterface, Sequelize) {
-    await queryInterface.dropTable('Characters');
+    await queryInterface.dropTable('Chapters');
   }
 };

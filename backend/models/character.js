@@ -41,6 +41,10 @@ module.exports = (sequelize) => {
         type: DataTypes.STRING,
         defaultValue: 'uploads/defaultCha.png',
       },
+      page: {
+        type: DataTypes.ARRAY(DataTypes.INTEGER), // 数组类型
+        defaultValue: [], // 默认值为空数组
+      },
       created_at: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,

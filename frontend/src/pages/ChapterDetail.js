@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams, useLocation } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import config from '../config';
 import TextDetail from './components/TextDetail';
 import ImageDetail from './components/ImageDetail';
@@ -9,93 +9,134 @@ import '../style.css';
 
 
 const ChapterDetail = ({ isEnglish }) => {
-    const { work_id, chapter_id } = useParams();
-    const [workTitle, setWorkTitle] = useState('');
-    const [workTitleEn, setWorkTitleEn] = useState('');
-    const [chaTitle, setChaTitle] = useState('');
-    const [chaTitleEn, setChaTitleEn] = useState('');
-    const [detailList, setDetailList] = useState([]);
+  const { work_id, chapter_id } = useParams();
+  const [workTitle, setWorkTitle] = useState('');
+  const [workTitleEn, setWorkTitleEn] = useState('');
+  const [chaTitle, setChaTitle] = useState('');
+  const [chaTitleEn, setChaTitleEn] = useState('');
+  const [detailList, setDetailList] = useState([]);
+  const [pages, setPages] = useState([]);
+  const [currentPage, setCurrentPage] = useState(() => {
+    // 尝试从 localStorage 获取当前页，如果没有则默认是 0
+    const savedPage = localStorage.getItem(`chapter_${chapter_id}_page`);
+    return savedPage ? Number(savedPage) : 0;
+  });
 
-    useEffect(() => {
-        const fetchWorkDetails = async () => {
-          try {
-            const response = await fetch(`${config.backendUrl}/api/works/${work_id}`);
-            const data = await response.json();
-            setWorkTitle(data.title);
-            setWorkTitleEn(data.title_en);
-          } catch (error) {
-            console.error('Failed to fetch work details:', error);
-          }
-        };
+  useEffect(() => {
+    const fetchWorkDetails = async () => {
+      try {
+        const response = await fetch(`${config.backendUrl}/api/works/${work_id}`);
+        const data = await response.json();
+        setWorkTitle(data.title);
+        setWorkTitleEn(data.title_en);
+      } catch (error) {
+        console.error('Failed to fetch work details:', error);
+      }
+    };
     
-        fetchWorkDetails();
-      }, []);
+    fetchWorkDetails();
+  }, []);
 
-      useEffect(() => {
-        const fetchChaDetails = async () => {
-          try {
-            const response = await fetch(`${config.backendUrl}/api/chapters/one/${chapter_id}`);
-            const data = await response.json();
-            setChaTitle(data.title);
-            setChaTitleEn(data.title_en.toUpperCase());
-            console.log(data)
-          } catch (error) {
-            console.error('Failed to fetch work details:', error);
-          }
-        };
+  useEffect(() => {
+    const fetchChaDetails = async () => {
+      try {
+        const response = await fetch(`${config.backendUrl}/api/chapters/one/${chapter_id}`);
+        const data = await response.json();
+        setChaTitle(data.title);
+        setChaTitleEn(data.title_en.toUpperCase());
+        setPages(data.page || [detailList.length])
+      } catch (error) {
+        console.error('Failed to fetch work details:', error);
+      }
+    };
     
-        fetchChaDetails();
-      }, []);
+    fetchChaDetails();
+  }, []);
 
-      useEffect(() => {
-        const fetchData = async () => {
-          try {
-            const response = await fetch(`${config.backendUrl}/api/chapters/details/${chapter_id}`);
-            const data = await response.json();
-            console.log(data);
-            setDetailList(data);
-          } catch (error) {
-            console.error('Failed to fetch data:', error);
-          }
-        };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`${config.backendUrl}/api/chapters/details/${chapter_id}`);
+        const data = await response.json();
+        setDetailList(data);
+      } catch (error) {
+        console.error('Failed to fetch data:', error);
+      }
+    };
     
-        fetchData();
-      }, []);
-    
-      // Render different components based on content_type
-        const renderDetail = (item) => {
-            switch (item.content_type) {
-            case 'image':
-                return <ImageDetail key={item.id} content={isEnglish ? item.content_en : item.content} />;
-            case 'video':
-                return <VideoDetail key={item.id} content={isEnglish ? item.content_en : item.content} />;
-            case 'link':
-                return <
-                    LinkDetail key={item.id} 
-                    content={isEnglish ? item.content_en : item.content} 
-                    text={isEnglish ? 'Start Game' : '跳转游戏'}
-                    />;
-            case 'text':
-                console.log(item)
-                return <TextDetail key={item.id} content={isEnglish ? item.content_en : item.content} />;
-            default:
-                return <p>Unsupported content type</p>;
-            }
-        };
+    fetchData();
+  }, []);
+
+  const getPageDetails = () => {
+    const startIndex = pages.slice(0, currentPage).reduce((acc, val) => acc + val, 0);
+    const endIndex = startIndex + pages[currentPage];
+    return detailList.slice(startIndex, endIndex);
+  };
+
+  // 保存当前页到 localStorage
+  useEffect(() => {
+    const savedPage = localStorage.getItem(`chapter_${chapter_id}_page`);
+    if (savedPage) {
+      setCurrentPage(Number(savedPage));
+    }
+  }, [chapter_id]);
+
+  useEffect(() => {
+    localStorage.setItem(`chapter_${chapter_id}_page`, currentPage);
+  }, [currentPage, chapter_id]);
+
+  // Render different components based on content_type
+  const renderDetail = (item) => {
+    switch (item.content_type) {
+      case 'image':
+        return <ImageDetail key={item.id} content={isEnglish ? item.content_en : item.content} />;
+      case 'video':
+        return <VideoDetail key={item.id} content={isEnglish ? item.content_en : item.content} />;
+      case 'link':
+        return <LinkDetail 
+          key={item.id} 
+          content={isEnglish ? item.content_en : item.content} 
+          text={isEnglish ? 'Start Game' : '跳转游戏'}
+        />;
+      case 'text':
+        return <TextDetail key={item.id} content={isEnglish ? item.content_en : item.content} />;
+      default:
+        return <p>Unsupported content type</p>;
+    }
+  };
   
   return (
     <div className='detailList-container'>
       <div className='cha-title'>
-      <h1 className='cha-h1'>{isEnglish ? chaTitleEn : chaTitle}/</h1>
-      <h2 className='cha-h2'>{isEnglish ? workTitleEn : workTitle}</h2>
+        <h1 className='cha-h1'>{isEnglish ? chaTitleEn : chaTitle}/</h1>
+        <h2 className='cha-h2'>{isEnglish ? workTitleEn : workTitle}</h2>
       </div>
       <div className="detailList-container">
-        {detailList.map((item) => (
+        {getPageDetails().map((item) => (
           <div key={item.id} className="detail-item">
             {renderDetail(item)}
           </div>
         ))}
       </div>
+
+      {/* 换页按钮 */}
+      {pages.length > 1 && (
+        <div className="pagination">
+          <div 
+            className={`image-button ${currentPage === 0 ? 'disabled' : ''}`}
+            onClick={() => setCurrentPage((prev) => prev - 1)}
+          >
+            <img src="/assest/image/last.png" alt="Button" />
+          </div>
+          <span>{currentPage + 1} | {pages.length}</span>
+          <div
+            className={`image-button ${currentPage === pages.length - 1 ? 'disabled' : ''}`}
+            onClick={() => setCurrentPage((prev) => prev + 1)}
+          >
+            <img src="/assest/image/next.png" alt="Button" />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
