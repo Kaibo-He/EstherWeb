@@ -1,6 +1,5 @@
 const config = {
-    backendUrl: 'http://localhost:5000',
-    password: '123456',
+    backendUrl: process.env.REACT_APP_API_URL || "http://localhost:5000/api",
     systemFont: '"Microsoft YaHei",sans-serif',
     textFont: '"SimSun", "STSong", "NSimSun", sans-serif',
     fontSizeXS: '12px',

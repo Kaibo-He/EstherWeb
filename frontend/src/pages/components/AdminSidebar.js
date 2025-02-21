@@ -1,11 +1,14 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import '../admin/admin.css';
 
-const AdminSidebar = ({setIsAuthenticated, navigate}) => {
+const AdminSidebar = ({setIsAuthenticated}) => {
+  const navigate = useNavigate();
+  
   const handleLogout = () => {
     setIsAuthenticated(false); // 清除全局状态
-    localStorage.removeItem('isAuthenticated'); // 从 localStorage 中移除
+    localStorage.removeItem('isAuthenticated'); // 移除认证标志
+    localStorage.removeItem('token'); // 确保移除 `token`
     navigate('/admin'); // 跳转到登录页面
   };
 

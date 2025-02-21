@@ -3,26 +3,26 @@ import { Outlet, useLocation, useParams } from 'react-router-dom';
 import FrontTopBar from './components/FrontTopBar'; // 引入你希望始终显示的组件
 
 const FrontLayout = ({ isEnglish = false }) => {
-    const location = useLocation();
-    const { work_id, chapter_id, character_id } = useParams();
+  const location = useLocation();
+  const { work_id, chapter_id, character_id } = useParams();
 
-    const isHome = (location.pathname === '/' || location.pathname === '/en');
+  const isHome = (location.pathname === '/' || location.pathname === '/en');
 
-    let backUrl = '/';
+  let backUrl = '/';
     
-    if (location.pathname.includes('/chapter')) {
-        if (chapter_id) {
-          backUrl = `/chapter/${work_id}${location.pathname.includes('/en') ? '/en' : ''}`;
-        } else {
-          backUrl = `/${location.pathname.includes('/en') ? 'en' : ''}`;
-        }
-      } else if (location.pathname.includes('/character')) {
-        if (character_id) {
-          backUrl = `/character/${work_id}${location.pathname.includes('/en') ? '/en' : ''}`;
-        } else {
-          backUrl = `/${location.pathname.includes('/en') ? 'en' : ''}`;
-        }
-      }
+  if (location.pathname.includes('/chapter')) {
+    if (chapter_id) {
+      backUrl = `/chapter/${work_id}${location.pathname.includes('/en') ? '/en' : ''}`;
+    } else {
+      backUrl = `/${location.pathname.includes('/en') ? 'en' : ''}`;
+    }
+  } else if (location.pathname.includes('/character')) {
+    if (character_id) {
+      backUrl = `/character/${work_id}${location.pathname.includes('/en') ? '/en' : ''}`;
+    } else {
+      backUrl = `/${location.pathname.includes('/en') ? 'en' : ''}`;
+    }
+  }
       
   return (
     <div>

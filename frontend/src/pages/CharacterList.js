@@ -34,7 +34,6 @@ const CharacterList = ({ isEnglish }) => {
       try {
         const response = await fetch(`${config.backendUrl}/api/characters/${work_id}`);
         const data = await response.json();
-        console.log(data);
         const updatedData = data.map((item) => ({
             ...item,
             cover: `${config.backendUrl}/uploads/${item.cover}`
@@ -49,28 +48,27 @@ const CharacterList = ({ isEnglish }) => {
   }, [work_id]);
 
   let endUrl = '';
-
-    if (location.pathname.includes('/en')) {
-      endUrl = '/en';
-    }
+  if (location.pathname.includes('/en')) {
+    endUrl = '/en';
+  }
 
   return (
     <div className='chaList-container'>
       <div className='cha-title'>
-      <h1 className='cha-h1'>{isEnglish ? 'CHARACTERS/' : '角色列表/'}</h1>
-      <h2 className='cha-h2'>{isEnglish ? workTitleEn : workTitle}</h2>
+        <h1 className='cha-h1'>{isEnglish ? 'CHARACTERS/' : '角色列表/'}</h1>
+        <h2 className='cha-h2'>{isEnglish ? workTitleEn : workTitle}</h2>
       </div>
-      <div className='characterDetailList-container'>
+      <div className='chaDetailList-container'>
         {characterList.map((item, index) => (
-        <ChaItem
+          <ChaItem
             key={item.id}
             Image={item.cover}
             Text={isEnglish ? item.name_en : item.name}
             onClick={() => 
-            navigate(`/character/${work_id}/${item.id}${endUrl}`)
+              navigate(`/character/${work_id}/${item.id}${endUrl}`)
             }
-        />
-      ))}
+          />
+        ))}
       </div>
     </div>
   );

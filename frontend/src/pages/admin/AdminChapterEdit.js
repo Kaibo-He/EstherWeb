@@ -8,6 +8,7 @@ import Dropdown from '../components/DropDown';
 import './admin.css';
 
 const AdminChapterEdit = () => {
+    const token = localStorage.getItem('token');
     const { work_id, chapter_id} = useParams();
     const [detailList, setDetailList] = useState([]);
     const [selectedValue, setSelectedValue] = useState("");
@@ -101,7 +102,6 @@ const AdminChapterEdit = () => {
     };
 
     const handleUploadChange = (e, type, isEn) => {
-        console.log('typenow',type)
         let input = null
         if (type.includes('image') || type.includes('video')) {
             input = e.target.files[0];
@@ -119,13 +119,10 @@ const AdminChapterEdit = () => {
       try {
           const croppedBlob = await getCroppedImg(cropData.imageSrc, cropData.croppedAreaPixels, 1000, 90);
           const croppedFile = new File([croppedBlob], 'cover.png', { type: 'image/png' });
-          console.log(croppedFile)
           setFormData((prev) => ({
               ...prev,
               cover: croppedFile, // 将裁剪后的图片保存到相应字段
           }));
-          console.log(cropData.cropType)
-          console.log('crop', formData)
           setShowCropModal(false);
       } catch (error) {
           console.error('Error cropping image:', error);
@@ -149,6 +146,7 @@ const AdminChapterEdit = () => {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json', // 设置为 JSON 格式
+                'Authorization': `Bearer ${token}`
               },
               body: JSON.stringify(body),
           });
@@ -175,6 +173,7 @@ const AdminChapterEdit = () => {
       try {
           const response = await fetch(`${config.backendUrl}/api/upload`, {
               method: 'POST',
+              headers: {'Authorization': `Bearer ${token}`},
               body,
           });
   
@@ -205,6 +204,7 @@ const AdminChapterEdit = () => {
         try {
             const response = await fetch(`${config.backendUrl}/api/upload`, {
                 method: 'POST',
+                headers: {'Authorization': `Bearer ${token}`},
                 body,
             });
     
@@ -234,10 +234,10 @@ const AdminChapterEdit = () => {
               method: 'PUT',
               headers: {
                 'Content-Type': 'application/json', // 设置请求头为 JSON
+                'Authorization': `Bearer ${token}`
               },
               body: JSON.stringify(body), // 将对象转换为 JSON 字符串
             });
-            console.log(response)
             if (!response.ok) {
               const errorData = await response.json();
               console.error('Upload failed:', errorData);
@@ -260,11 +260,11 @@ const AdminChapterEdit = () => {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json', // 设置请求头为 JSON
+            'Authorization': `Bearer ${token}`
           },
           body: JSON.stringify(body), // 将对象转换为 JSON 字符串
         });
         setCurrentChapter({...currentChapter, cover: path});
-        console.log(response)
         if (!response.ok) {
           const errorData = await response.json();
           console.error('Upload failed:', errorData);
@@ -287,6 +287,7 @@ const AdminChapterEdit = () => {
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json', // 设置请求头为 JSON
+              'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify(body), // 将对象转换为 JSON 字符串
           });
@@ -344,6 +345,7 @@ const AdminChapterEdit = () => {
         try {
             const response = await fetch(`${config.backendUrl}/api/chapters/details/${deleteId}`, {
                 method: 'DELETE',
+                headers: {'Authorization': `Bearer ${token}`}
             });
 
             if (response.ok) {
@@ -363,6 +365,7 @@ const AdminChapterEdit = () => {
         try {
             const response = await fetch(`${config.backendUrl}/api/upload/one`, {
                 method: 'DELETE',
+                headers: {'Authorization': `Bearer ${token}`},
                 body
             });
         } catch (error) {
@@ -372,7 +375,6 @@ const AdminChapterEdit = () => {
     }
 
     const editChapter = async () => {
-        console.log(formData)
         if (formData.title) {
           setTitle(chapter_id);
           if (formData.cover) {
@@ -420,7 +422,7 @@ const AdminChapterEdit = () => {
         try {
           await fetch(`${config.backendUrl}/api/chapters/${id}/page`, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
             body: JSON.stringify({ page: pageArray }),
           });
           setCurrentChapter({...currentChapter, page: pageArray})
@@ -433,7 +435,7 @@ const AdminChapterEdit = () => {
         try {
           await fetch(`${config.backendUrl}/api/chapters/${chapter_id}/page`, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
             body: JSON.stringify({ page: [] }),
           });
           alert('分页已清空！');
@@ -509,14 +511,14 @@ const AdminChapterEdit = () => {
           case "link":
             return (
                 <div className='image-content'>
-                <label>请选择中文内容</label>
+                <label>请输入中文内容</label>
                 <input
                 type="text"
                 onChange={(e) => handleUploadChange(e, 'link', false)}
                 className="file-input"
                 placeholder='请输入游戏链接'
                 />
-                <label>请选择英文内容</label>
+                <label>请输入英文内容</label>
                 <input
                 type="text"
                 onChange={(e) => handleUploadChange(e, 'link', true)}
@@ -545,8 +547,6 @@ const AdminChapterEdit = () => {
         let path_en = '';
         let finalContent = formData.content;
         let finalContent_en = formData.content_en;
-        console.log(currentDetail)
-        console.log(formData)
 
         if (formData.content_type === currentDetail.content_type) {
             
@@ -704,7 +704,7 @@ const AdminChapterEdit = () => {
                           name="page"
                           value={formData.page}
                           onChange={(e) => setFormData((prev) => ({ ...prev, page: e.target.value }))}
-                          placeholder="请输入分页信息，用逗号或空格分隔"
+                          placeholder="请输入分页信息，用英文逗号或空格分隔，如：1 2 3"
                           className="text-input"
                       />
                       </div>

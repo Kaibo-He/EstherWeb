@@ -12,8 +12,8 @@ const WorkItem = ({ leftImage, rightImage, leftText, rightText, onLeftClick, onR
         data-text = {leftText}
         onClick={onLeftClick}
       >
-        
       </button>
+      
       <button
         className="right-trapezoid"
         style={{
