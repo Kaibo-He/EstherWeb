@@ -322,7 +322,7 @@ const AdminWorkList = () => {
                   name="title"
                   value={formData.title}
                   onChange={(e) => setFormData((prev) => ({ ...prev, title: e.target.value }))}
-                  placeholder="作品标题"
+                  placeholder="作品标题*"
                   className="text-input"
                 />
                 <input

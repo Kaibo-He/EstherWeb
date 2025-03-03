@@ -127,7 +127,7 @@ router.put('/', authenticateToken, (req, res) => {
     });
 });
 
-// PUT /api/upload: 删除指定路径以及下面的文件
+// PUT /api/upload/delete/all: 删除指定路径以及下面的文件
 router.put('/delete/all', authenticateToken, (req, res) => {
     const form = new multiparty.Form();
 
@@ -164,7 +164,7 @@ router.put('/delete/all', authenticateToken, (req, res) => {
     });
 });
 
-// PUT /api/upload/one：删除指定文件
+// PUT /api/upload/delete/one：删除指定文件
 router.put('/delete/one', authenticateToken, (req, res) => {
     const form = new multiparty.Form();
 

@@ -461,7 +461,7 @@ const AdminChapterEdit = () => {
                     <textarea
                         onChange={(e) => handleUploadChange(e, 'text', false)}
                         className="file-input"
-                        placeholder='请输入中文'
+                        placeholder='请输入中文*'
                     />
                     <textarea
                         onChange={(e) => handleUploadChange(e, 'text', true)}
@@ -473,7 +473,7 @@ const AdminChapterEdit = () => {
           case "image":
             return (
                 <div className='image-content'>
-                <label>请选择中文内容</label>
+                <label>请选择中文内容*</label>
                 <input
                 type="file"
                 accept="image/*"
@@ -492,7 +492,7 @@ const AdminChapterEdit = () => {
           case "video":
             return (
                 <div className='image-content'>
-                <label>请选择中文内容</label>
+                <label>请选择中文内容*</label>
                 <input
                 type="file"
                 accept="video/*"
@@ -511,7 +511,7 @@ const AdminChapterEdit = () => {
           case "link":
             return (
                 <div className='image-content'>
-                <label>请输入中文内容</label>
+                <label>请输入中文内容*</label>
                 <input
                 type="text"
                 onChange={(e) => handleUploadChange(e, 'link', false)}
@@ -528,7 +528,7 @@ const AdminChapterEdit = () => {
                 </div>
             );
           default:
-            return <p>请在下拉菜单选择内容类型</p>;
+            return <p>请在下拉菜单选择内容类型*</p>;
         }
       };
 
@@ -647,7 +647,7 @@ const AdminChapterEdit = () => {
                   <div className="createWork-content">
                       <h2 className='admin-h2'>新建内容</h2>
                       <div>
-                        <label>请在右侧下拉菜单中选择内容类型</label>
+                        <label>请在右侧下拉菜单中选择内容类型*</label>
                         <select id="dropdown" name="options" onChange={handleChange}>
                             <option value="text">文本</option>
                             <option value="image">图片</option>

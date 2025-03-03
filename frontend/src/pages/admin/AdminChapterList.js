@@ -263,7 +263,7 @@ const AdminChapterList = () => {
         <Dropdown
           options={workList}
           onSelect={handleSelect}
-          placeholder="请选择作品"
+          placeholder="请选择作品*"
         />
         <div className='editList-container'>
           {chapterList.map((item, index) => (
@@ -288,7 +288,7 @@ const AdminChapterList = () => {
                 name="title"
                 value={formData.title}
                 onChange={(e) => setFormData((prev) => ({ ...prev, title: e.target.value }))}
-                placeholder="章节标题"
+                placeholder="章节标题*"
                 className="text-input"
               />
               <input
