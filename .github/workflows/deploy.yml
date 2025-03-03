@@ -3,7 +3,10 @@ name: Deploy to Server
 on:
   push:
     branches:
-      - main    # 当 main 分支有推送时触发自动部署，可根据需要修改
+      - main    
+  pull_request:
+    branches:
+      - main
 
 jobs:
   deploy:
@@ -18,17 +21,6 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install Frontend Dependencies and Build
-        working-directory: frontend
-        run: |
-          yarn install
-          CI=false yarn build
-
-      - name: Install Backend Dependencies
-        working-directory: backend
-        run: |
-          yarn install
-
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v0.1.7
         with:
@@ -36,23 +28,31 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            # 设置 SSH 连接
+            mkdir -p ~/.ssh
+            echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+            chmod 600 ~/.ssh/id_ed25519
+            ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+
             # 进入项目目录
             cd ${{ secrets.SERVER_PATH }}
 
             # 拉取最新代码
-            git pull origin main
+            git reset --hard origin/main
+            git pull origin main --rebase
 
             # 部署后端
             cd backend
-            yarn install
+            yarn install --frozen-lockfile
             pm2 restart backend || pm2 start yarn --name backend -- start
+            pm2 save
 
             # 部署前端
             cd ../frontend
-            yarn install
-            yarn build
+            yarn install --frozen-lockfile
+            CI=false yarn build
 
-            # 更新 Nginx 托管目录（确保你有 sudo 权限配置免密码执行，或通过其他方式处理）
+            # 更新 Nginx 托管目录
             sudo rm -rf /var/www/html/*
             sudo cp -r build/* /var/www/html/
 
