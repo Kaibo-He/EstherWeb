@@ -5,6 +5,35 @@ const path = require('path');
 const fs = require('fs');
 const authenticateToken = require('../middleware/auth'); // 认证中间件
 
+// 设置上传目录（确保路径正确）
+const UPLOADS_DIR = path.join(__dirname, "../uploads"); // 确保所有文件存储在 `backend/uploads/`
+
+// 确保 `uploads` 目录存在
+if (!fs.existsSync(UPLOADS_DIR)) {
+    fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+}
+
+// 规范化路径 & 处理路径不存在情况
+const normalizeUploadPath = (uploadPath) => {
+    if (!uploadPath) return ""; // 避免 undefined
+
+    if (uploadPath === "uploads") {
+        uploadPath = "";
+    }
+
+    // 移除 `uploads/` 前缀，确保路径合法
+    if (uploadPath.startsWith("uploads/")) {
+        uploadPath = uploadPath.replace(/^uploads\//, "");
+    }
+
+    // **防止路径逃逸攻击**
+    if (uploadPath.includes("..")) {
+        throw new Error("Invalid path");
+    }
+
+    return uploadPath;
+};
+
 // POST /api/upload: 上传文件到指定路径，如路径不存在则创建路径
 router.post('/', authenticateToken, (req, res) => {
     const form = new multiparty.Form();
@@ -16,7 +45,7 @@ router.post('/', authenticateToken, (req, res) => {
 
         try {
             // 获取字段和文件
-            const uploadPath = fields.path?.[0];
+            let uploadPath = fields.path?.[0];
             const fileName = fields.name?.[0];
             const file = files.file?.[0];
 
@@ -24,28 +53,23 @@ router.post('/', authenticateToken, (req, res) => {
                 return res.status(400).json({ error: 'Path, name, and file are required' });
             }
 
+            // **修正 `uploads/uploads/` 问题**
+            uploadPath = normalizeUploadPath(uploadPath);
+            const targetDir = path.join(UPLOADS_DIR, uploadPath);
+
             // 创建目录
-            const fullPath = path.resolve(uploadPath);
-            if (!fs.existsSync(fullPath)) {
-                fs.mkdirSync(fullPath, { recursive: true });
+            if (!fs.existsSync(targetDir)) {
+                fs.mkdirSync(targetDir, { recursive: true });
             }
 
             // 保存文件
-            const relativePath = path.join(uploadPath, fileName + path.extname(file.originalFilename));
-            const destPath = path.join(fullPath, fileName + path.extname(file.originalFilename));
+            const destPath = path.join(targetDir, fileName + path.extname(file.originalFilename));
 
             // 使用 copyAndRemove 替代 rename
-            await new Promise((resolve, reject) => {
-                fs.copyFile(file.path, destPath, (err) => {
-                    if (err) return reject(err);
-                    fs.unlink(file.path, (err) => {
-                        if (err) return reject(err);
-                        resolve();
-                    });
-                });
-            });
+            await fs.promises.copyFile(file.path, destPath);
+            await fs.promises.unlink(file.path);
 
-            res.status(200).json({ message: 'File uploaded successfully', filePath: relativePath });
+            res.status(200).json({ message: 'File uploaded successfully', filePath: `/uploads/${uploadPath}/${fileName}${path.extname(file.originalFilename)}` });
         } catch (error) {
             res.status(500).json({ error: error.message });
         }
@@ -62,7 +86,7 @@ router.put('/', authenticateToken, (req, res) => {
         }
 
         try {
-            const uploadPath = fields.path?.[0];
+            let uploadPath = fields.path?.[0];
             const fileName = fields.name?.[0];
             const file = files.file?.[0];
 
@@ -70,35 +94,31 @@ router.put('/', authenticateToken, (req, res) => {
                 return res.status(400).json({ error: 'Path, name, and file are required' });
             }
 
-            const fullPath = path.resolve(uploadPath);
-            if (!fs.existsSync(fullPath)) {
-                fs.mkdirSync(fullPath, { recursive: true });
+            uploadPath = normalizeUploadPath(uploadPath);
+            const targetDir = path.join(UPLOADS_DIR, uploadPath);
+
+            // 创建目录（如果不存在）
+            if (!fs.existsSync(targetDir)) {
+                fs.mkdirSync(targetDir, { recursive: true });
             }
 
             const newFileExt = path.extname(file.originalFilename);
             const baseFileName = fileName; // 不含扩展名的文件名
-            const newFilePath = path.join(fullPath, `${baseFileName}${newFileExt}`);
+            const newFilePath = path.join(targetDir, `${baseFileName}${newFileExt}`);
 
             // 查找现有的同名文件（不同扩展名也算）
-            const existingFiles = fs.readdirSync(fullPath).filter((f) => {
+            const existingFiles = fs.readdirSync(targetDir).filter((f) => {
                 return path.basename(f, path.extname(f)) === baseFileName;
             });
 
             // 删除所有同名文件（无论扩展名）
             for (const existingFile of existingFiles) {
-                fs.unlinkSync(path.join(fullPath, existingFile));
+                fs.unlinkSync(path.join(targetDir, existingFile));
             }
 
             // 保存新文件
-            await new Promise((resolve, reject) => {
-                fs.copyFile(file.path, newFilePath, (err) => {
-                    if (err) return reject(err);
-                    fs.unlink(file.path, (err) => {
-                        if (err) return reject(err);
-                        resolve();
-                    });
-                });
-            });
+            await fs.promises.copyFile(file.path, newFilePath);
+            await fs.promises.unlink(file.path);
 
             res.status(200).json({ message: 'File replaced successfully', filePath: newFilePath });
         } catch (error) {
@@ -107,8 +127,8 @@ router.put('/', authenticateToken, (req, res) => {
     });
 });
 
-// DELETE /api/upload: 删除指定路径以及下面的文件
-router.delete('/', authenticateToken, (req, res) => {
+// PUT /api/upload: 删除指定路径以及下面的文件
+router.put('/', authenticateToken, (req, res) => {
     const form = new multiparty.Form();
 
     form.parse(req, (err, fields) => {
@@ -117,35 +137,35 @@ router.delete('/', authenticateToken, (req, res) => {
         }
 
         try {
-            const targetPath = fields.path?.[0]; // 要删除的目标路径
+            let uploadPath = fields.path?.[0];
+            // const targetPath = fields.path?.[0]; // 要删除的目标路径
 
-            if (!targetPath) {
+            if (!uploadPath) {
                 return res.status(400).json({ error: 'Path is required' });
             }
 
-            const fullPath = path.resolve(targetPath);
+            uploadPath = normalizeUploadPath(uploadPath);
+            const fullPath = path.join(UPLOADS_DIR, uploadPath);
 
-            // 检查目标路径是否存在
             if (!fs.existsSync(fullPath)) {
-                return res.status(404).json({ error: 'Path or file not found' });
+                return res.status(404).json({ error: 'Directory not found' });
             }
 
-            const stats = fs.lstatSync(fullPath);
-            if (stats.isDirectory()) {
-                // 递归删除目录及其内容
-                fs.rmdirSync(fullPath, { recursive: true });
-                res.status(200).json({ message: 'Directory and its contents deleted successfully' });
-            } else {
-                res.status(400).json({ error: 'Invalid path type' });
+            // 防止删除 `uploads/` 根目录
+            if (fullPath === UPLOADS_DIR) {
+                return res.status(400).json({ error: "Cannot delete root uploads directory" });
             }
+
+            fs.rmSync(fullPath, { recursive: true, force: true });
+            res.status(200).json({ message: 'Directory and its contents deleted successfully' });
         } catch (error) {
             res.status(500).json({ error: error.message });
         }
     });
 });
 
-// DELETE /api/upload/one：删除指定文件
-router.delete('/one', authenticateToken, (req, res) => {
+// PUT /api/upload/one：删除指定文件
+router.put('/one', authenticateToken, (req, res) => {
     const form = new multiparty.Form();
 
     form.parse(req, (err, fields) => {
@@ -154,21 +174,22 @@ router.delete('/one', authenticateToken, (req, res) => {
         }
 
         try {
-            const uploadPath = fields.path?.[0];
+            let uploadPath = fields.path?.[0];
             const fileName = fields.name?.[0];
 
             if (!uploadPath || !fileName) {
                 return res.status(400).json({ error: 'Path and name are required' });
             }
 
-            const fullPath = path.resolve(uploadPath);
+            uploadPath = normalizeUploadPath(uploadPath);
+            const targetDir = path.join(UPLOADS_DIR, uploadPath);
 
-            if (!fs.existsSync(fullPath)) {
+            if (!fs.existsSync(targetDir)) {
                 return res.status(404).json({ error: 'Specified path does not exist' });
             }
 
             // 查找匹配的文件
-            const matchingFiles = fs.readdirSync(fullPath).filter((file) => {
+            const matchingFiles = fs.readdirSync(targetDir).filter((file) => {
                 return path.basename(file, path.extname(file)) === fileName;
             });
 
@@ -178,7 +199,7 @@ router.delete('/one', authenticateToken, (req, res) => {
 
             // 删除匹配的文件
             for (const file of matchingFiles) {
-                fs.unlinkSync(path.join(fullPath, file));
+                fs.unlinkSync(path.join(targetDir, file));
             }
 
             res.status(200).json({ message: 'File(s) deleted successfully', deletedFiles: matchingFiles });
