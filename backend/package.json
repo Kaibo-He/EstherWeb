@@ -18,6 +18,6 @@
     "sequelize-cli": "^6.6.2"
   },
   "scripts": {
-  "migrate": "npx knex migrate:latest"
+  "migrate": "npx sequelize db:migrate"
   }
 }
