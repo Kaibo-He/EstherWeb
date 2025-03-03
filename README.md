@@ -98,4 +98,31 @@
 - **部署平台** AWS
 - **版本管理** GitHub
 
+## 手动更新部署流程
+- CI/CD设置暂未完成，因此手动部署更新
+### SSH to Server
+    ssh -i ~/work-web-key.pem ubuntu@18.117.140.14
 
+### Run on Server
+    # 进入项目目录
+    cd EstherWeb
+    # 拉取git更新
+    git pull git@github.com:Kaibo-He/EstherWeb.git
+
+    # 部署后端
+    cd backend
+    yarn install
+    pm2 restart backend
+    pm2 save
+
+    # 部署前端
+    cd ../frontend
+    yarn install
+    yarn build
+    
+    # 更新 Nginx 托管目录
+    sudo rm -rf /var/www/html/*
+    sudo cp -r build/* /var/www/html/
+
+    # 重启 Nginx
+    sudo systemctl reload nginx
