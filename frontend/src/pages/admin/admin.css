@@ -38,7 +38,7 @@
     font-weight: bold;
     margin-bottom: 20px;
     text-align: center;
-    color: white; /* 白色 */
+    color: white;
     font-weight: bolder;
     font-family: var(--font-sys); /* 字体 */
     font-size: var(--fontSize-m);
