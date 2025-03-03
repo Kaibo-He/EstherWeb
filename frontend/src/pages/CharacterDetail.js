@@ -35,7 +35,7 @@ const CharacterDetail = ({ isEnglish }) => {
     };
     
     fetchWorkDetails();
-  }, []);
+  }, [work_id]);
 
   useEffect(() => {
     const fetchChaDetails = async () => {
@@ -51,7 +51,7 @@ const CharacterDetail = ({ isEnglish }) => {
     };
     
     fetchChaDetails();
-  }, []);
+  }, [character_id]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -65,7 +65,7 @@ const CharacterDetail = ({ isEnglish }) => {
     };
     
     fetchData();
-  }, []);
+  }, [character_id]);
     
   const getPageDetails = () => {
     let slices = pages;

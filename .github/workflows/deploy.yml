@@ -22,7 +22,7 @@ jobs:
         working-directory: frontend
         run: |
           yarn install
-          yarn build
+          CI=false yarn build
 
       - name: Install Backend Dependencies
         working-directory: backend

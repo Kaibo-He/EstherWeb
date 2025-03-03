@@ -4,7 +4,6 @@ import config from '../../config';
 import EditItem from '../components/EditItem';
 import Cropper from 'react-easy-crop';
 import getCroppedImg from '../components/getCroppedImg';
-import Dropdown from '../components/DropDown';
 import './admin.css';
 
 const AdminChapterEdit = () => {
@@ -41,7 +40,7 @@ const AdminChapterEdit = () => {
           }
         };
         fetchData();
-      }, []);
+      }, [chapter_id]);
 
     const handleAddDetail = () => {
       setFormData({ content: '', content_en: '', content_type: ''});

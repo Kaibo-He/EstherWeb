@@ -35,7 +35,7 @@ const ChapterDetail = ({ isEnglish }) => {
     };
     
     fetchWorkDetails();
-  }, []);
+  }, [work_id]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -49,7 +49,7 @@ const ChapterDetail = ({ isEnglish }) => {
     };
     
     fetchData();
-  }, []);
+  }, [chapter_id]);
 
   useEffect(() => {
     const fetchChaDetails = async () => {
@@ -59,14 +59,13 @@ const ChapterDetail = ({ isEnglish }) => {
         setChaTitle(data.title);
         setChaTitleEn(data.title_en.toUpperCase());
         setPages(data.page);
-        console.log('分页：', detailList);
       } catch (error) {
         console.error('Failed to fetch work details:', error);
       }
     };
     
     fetchChaDetails();
-  }, []);
+  }, [chapter_id, detailList]);
 
   const getPageDetails = () => {
     let slices = pages;
