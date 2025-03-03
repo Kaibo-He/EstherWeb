@@ -18,6 +18,8 @@
     "sequelize-cli": "^6.6.2"
   },
   "scripts": {
-  "migrate": "npx sequelize db:migrate"
+  "migrate": "npx sequelize db:migrate",
+  "start": "node app.js",
+  "dev": "nodemon app.js"
   }
 }
