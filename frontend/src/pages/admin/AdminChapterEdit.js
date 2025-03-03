@@ -363,7 +363,7 @@ const AdminChapterEdit = () => {
         body.append('path', `uploads/works/work${work_id}/chapters/chapter${chapter_id}`);
         body.append('name', `${work_id}-${chapter_id}-${deleteId}${ex}`)
         try {
-            const response = await fetch(`${config.backendUrl}/api/upload/one`, {
+            const response = await fetch(`${config.backendUrl}/api/upload/delete/one`, {
                 method: 'PUT',
                 headers: {'Authorization': `Bearer ${token}`},
                 body

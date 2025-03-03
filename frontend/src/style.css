@@ -60,7 +60,7 @@ img, video {
 
 .language-toggle {
   position: relative;
-  width: 40px;
+  width: 30px;
   height: 20px;
   background-color: white;
   border: 3px solid black; /* 设置边框宽度、样式和颜色 */
@@ -74,7 +74,7 @@ img, video {
 
 .toggle-button {
   position: absolute;
-  width: 30px;
+  width: 25px;
   height: 25px;
   background-color: white;
   border: 3px solid black; /* 设置边框宽度、样式和颜色 */
@@ -89,7 +89,7 @@ img, video {
 }
 
 .toggle-button.english {
-  transform: translateX(12px); /* 向右滑动 */
+  transform: translateX(7px); /* 向右滑动 */
 }
 
 .toggle-button.chinese {

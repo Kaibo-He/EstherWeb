@@ -230,7 +230,7 @@ const AdminChapterList = () => {
     const body = new FormData();
     body.append('path', `uploads/works/work${work_id}/chapters/chapter${deleteId}`);
     try {
-      const response = await fetch(`${config.backendUrl}/api/upload`, {
+      const response = await fetch(`${config.backendUrl}/api/upload/delete/all`, {
         method: 'PUT',
         headers: { 'Authorization': `Bearer ${token}` },
         body

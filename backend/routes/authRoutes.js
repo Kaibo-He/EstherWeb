@@ -23,7 +23,7 @@ router.post('/login', async (req, res) => {
     }
 
     // 生成 JWT 令牌
-    const token = jwt.sign({ isAdmin: true }, SECRET_KEY, { expiresIn: '2h' });
+    const token = jwt.sign({ isAdmin: true }, SECRET_KEY, { expiresIn: '24h' });
 
     res.json({ message: '登录成功', token });
 });
