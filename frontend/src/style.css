@@ -53,7 +53,7 @@ img, video {
 .front-topBar {
   display: flex; /* 使用 flexbox */
   align-items: center; /* 垂直方向居中对齐 */
-  justify-content: space-between; /* 元素之间的空间自动分配 */
+  justify-content: right; /* 元素之间的空间自动分配 */
   gap: 10px; /* 元素之间的间距 */
   padding: 10px; /* 内边距 */
 }
