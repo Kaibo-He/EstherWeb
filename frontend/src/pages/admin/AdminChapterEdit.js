@@ -646,7 +646,7 @@ const AdminChapterEdit = () => {
                   <div className="createWork-content">
                       <h2 className='admin-h2'>新建内容</h2>
                       <div>
-                        <label>请在右侧下拉菜单中选择内容类型*</label>
+                        <label>请在右侧下拉菜单中选择内容类型</label>
                         <select id="dropdown" name="options" onChange={handleChange}>
                             <option value="text">文本</option>
                             <option value="image">图片</option>
