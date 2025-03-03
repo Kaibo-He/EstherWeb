@@ -210,7 +210,7 @@ const AdminCharacterList = () => {
 
     try {
       const response = await fetch(`${config.backendUrl}/api/characters/${deleteId}`, {
-        method: 'DELETE',
+        method: 'PUT',
         headers: {'Authorization': `Bearer ${token}`}
       });
 
@@ -229,7 +229,7 @@ const AdminCharacterList = () => {
     body.append('path', `uploads/works/work${work_id}/characters/character${deleteId}`);
     try {
       const response = await fetch(`${config.backendUrl}/api/upload`, {
-        method: 'DELETE',
+        method: 'PUT',
         headers: {'Authorization': `Bearer ${token}`},
         body
       });

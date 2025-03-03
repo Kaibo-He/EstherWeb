@@ -344,7 +344,7 @@ const AdminChapterEdit = () => {
 
         try {
             const response = await fetch(`${config.backendUrl}/api/chapters/details/${deleteId}`, {
-                method: 'DELETE',
+                method: 'PUT',
                 headers: {'Authorization': `Bearer ${token}`}
             });
 
@@ -364,7 +364,7 @@ const AdminChapterEdit = () => {
         body.append('name', `${work_id}-${chapter_id}-${deleteId}${ex}`)
         try {
             const response = await fetch(`${config.backendUrl}/api/upload/one`, {
-                method: 'DELETE',
+                method: 'PUT',
                 headers: {'Authorization': `Bearer ${token}`},
                 body
             });

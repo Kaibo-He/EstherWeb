@@ -235,7 +235,7 @@ const AdminWorkList = () => {
 
     try {
       const response = await fetch(`${config.backendUrl}/api/works/${deleteId}`, {
-        method: 'DELETE',
+        method: 'PUT',
         headers: {'Authorization': `Bearer ${token}`}
       });
 
@@ -254,7 +254,7 @@ const AdminWorkList = () => {
     body.append('path', `uploads/works/work${deleteId}`);
     try {
       const response = await fetch(`${config.backendUrl}/api/upload`, {
-        method: 'DELETE',
+        method: 'PUT',
         headers: {'Authorization': `Bearer ${token}`},
         body
       });
