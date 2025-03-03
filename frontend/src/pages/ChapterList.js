@@ -36,7 +36,7 @@ const ChapterList = ({ isEnglish }) => {
         const data = await response.json();
         const updatedData = data.map((item) => ({
             ...item,
-            cover: `${config.backendUrl}/uploads/${item.cover}`
+            cover: `${config.backendUrl}${item.cover}`
           }));
         setchapterList(updatedData);
       } catch (error) {

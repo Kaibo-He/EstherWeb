@@ -44,7 +44,7 @@ const CharacterDetail = ({ isEnglish }) => {
         const data = await response.json();
         setChaTitle(data.name);
         setChaTitleEn(data.name_en.toUpperCase());
-        setPages(data.page || [detailList.length]);
+        setPages(data.page);
       } catch (error) {
         console.error('Failed to fetch work details:', error);
       }
@@ -68,8 +68,12 @@ const CharacterDetail = ({ isEnglish }) => {
   }, []);
     
   const getPageDetails = () => {
-    const startIndex = pages.slice(0, currentPage).reduce((acc, val) => acc + val, 0);
-    const endIndex = startIndex + pages[currentPage];
+    let slices = pages;
+    if (pages.length === 0) {
+      slices = [detailList.length];
+    }
+    const startIndex = slices.slice(0, currentPage).reduce((acc, val) => acc + val, 0);
+    const endIndex = startIndex + slices[currentPage];
     return detailList.slice(startIndex, endIndex);
   };
 

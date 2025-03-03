@@ -341,7 +341,7 @@ const AdminCharacterEdit = () => {
 
     try {
       const response = await fetch(`${config.backendUrl}/api/characters/details/${deleteId}`, {
-        method: 'PUT',
+        method: 'DELETE',
         headers: {'Authorization': `Bearer ${token}`}
       });
 

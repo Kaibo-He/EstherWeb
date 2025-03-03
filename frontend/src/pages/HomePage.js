@@ -17,8 +17,8 @@ const HomePage = ({ isEnglish }) => {
         const data = await response.json();
         const updatedData = data.map((item) => ({
           ...item,
-          cover: `${config.backendUrl}/uploads/${item.cover}`,
-          coverChar: `${config.backendUrl}/uploads/${item.coverChar}`, 
+          cover: `${config.backendUrl}${item.cover}`,
+          coverChar: `${config.backendUrl}${item.coverChar}`, 
         }));
         setWorkList(updatedData);
       } catch (error) {

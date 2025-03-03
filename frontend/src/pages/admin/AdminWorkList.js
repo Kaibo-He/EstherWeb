@@ -235,7 +235,7 @@ const AdminWorkList = () => {
 
     try {
       const response = await fetch(`${config.backendUrl}/api/works/${deleteId}`, {
-        method: 'PUT',
+        method: 'DELETE',
         headers: {'Authorization': `Bearer ${token}`}
       });
 
@@ -323,7 +323,7 @@ const AdminWorkList = () => {
                   value={formData.title}
                   onChange={(e) => setFormData((prev) => ({ ...prev, title: e.target.value }))}
                   placeholder="作品标题"
-                  lassName="text-input"
+                  className="text-input"
                 />
                 <input
                   type="text"

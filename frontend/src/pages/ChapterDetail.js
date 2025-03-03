@@ -38,22 +38,6 @@ const ChapterDetail = ({ isEnglish }) => {
   }, []);
 
   useEffect(() => {
-    const fetchChaDetails = async () => {
-      try {
-        const response = await fetch(`${config.backendUrl}/api/chapters/one/${chapter_id}`);
-        const data = await response.json();
-        setChaTitle(data.title);
-        setChaTitleEn(data.title_en.toUpperCase());
-        setPages(data.page || [detailList.length])
-      } catch (error) {
-        console.error('Failed to fetch work details:', error);
-      }
-    };
-    
-    fetchChaDetails();
-  }, []);
-
-  useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch(`${config.backendUrl}/api/chapters/details/${chapter_id}`);
@@ -67,9 +51,30 @@ const ChapterDetail = ({ isEnglish }) => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    const fetchChaDetails = async () => {
+      try {
+        const response = await fetch(`${config.backendUrl}/api/chapters/one/${chapter_id}`);
+        const data = await response.json();
+        setChaTitle(data.title);
+        setChaTitleEn(data.title_en.toUpperCase());
+        setPages(data.page);
+        console.log('分页：', detailList);
+      } catch (error) {
+        console.error('Failed to fetch work details:', error);
+      }
+    };
+    
+    fetchChaDetails();
+  }, []);
+
   const getPageDetails = () => {
-    const startIndex = pages.slice(0, currentPage).reduce((acc, val) => acc + val, 0);
-    const endIndex = startIndex + pages[currentPage];
+    let slices = pages;
+    if (pages.length === 0) {
+      slices = [detailList.length];
+    }
+    const startIndex = slices.slice(0, currentPage).reduce((acc, val) => acc + val, 0);
+    const endIndex = startIndex + slices[currentPage];
     return detailList.slice(startIndex, endIndex);
   };
 

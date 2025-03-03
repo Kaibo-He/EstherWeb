@@ -210,7 +210,7 @@ const AdminCharacterList = () => {
 
     try {
       const response = await fetch(`${config.backendUrl}/api/characters/${deleteId}`, {
-        method: 'PUT',
+        method: 'DELETE',
         headers: {'Authorization': `Bearer ${token}`}
       });
 

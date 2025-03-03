@@ -212,7 +212,7 @@ const AdminChapterList = () => {
 
     try {
       const response = await fetch(`${config.backendUrl}/api/chapters/${deleteId}`, {
-        method: 'PUT',
+        method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
