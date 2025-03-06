@@ -6,7 +6,12 @@ const VideoDetail = ({ content }) => {
   const conSrc = `${config.backendUrl}${content}`;
 
   return (
-    <video controls className='detail-video' onContextMenu={(e) => e.preventDefault()} onTouchStart={(e) => e.preventDefault()}>
+    <video 
+      controls className='detail-video' 
+      onContextMenu={(e) => e.preventDefault()} 
+      onTouchStart={(e) => e.preventDefault()}
+      onTouchEnd={(e) => e.preventDefault()}
+    >
       <source src={conSrc} type="video/mp4" />
     </video>
   );
