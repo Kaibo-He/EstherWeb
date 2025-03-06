@@ -346,7 +346,6 @@
 
 .editList-container {
   display: flex;
-  height: 1000px;
   flex-direction: column;
   gap: 10px;
   align-items: center;
@@ -354,6 +353,7 @@
   font-size: var(--fontSize-m);
   font-weight: bold;
   margin-top: 50px;
+  min-height: 600px;
 }
 
 .edit-container {
@@ -424,6 +424,8 @@
   position: absolute;
   top: 100%; /* 位于按钮下方 */
   right: 0; /* 对齐到右侧 */
+  max-height: 600px;
+  overflow-y: auto;
   background-color: white;
   border: solid 3px black;
   border-radius: 10px;
@@ -432,7 +434,6 @@
   z-index: 1000; /* 确保菜单显示在最上层 */
   list-style: none;
   padding: 0;
-  overflow: hidden;
 }
 
 /* Dropdown 项目 */

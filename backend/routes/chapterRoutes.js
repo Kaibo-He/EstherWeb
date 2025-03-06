@@ -1,5 +1,6 @@
 const express = require('express');
 const authenticateToken = require('../middleware/auth');
+const checkReferer = require('../middleware/checkReferer');
 const {
     createChapter,
     getChaptersByWork,
@@ -18,10 +19,10 @@ const {
 const router = express.Router();
 
 // 🔓 公开 API（获取信息）
-router.get('/:work_id', getChaptersByWork); // 获取作品章节列表
-router.get('/one/:id', getChapter); // 获取单个章节信息
-router.get('/details/:chapter_id', getChapterDetails); // 获取章节内容列表
-router.get('/details/one/:id', getChapterDetail); // 获取单个章节内容
+router.get('/:work_id', checkReferer, getChaptersByWork); // 获取作品章节列表
+router.get('/one/:id', checkReferer, getChapter); // 获取单个章节信息
+router.get('/details/:chapter_id', checkReferer, getChapterDetails); // 获取章节内容列表
+router.get('/details/one/:id', checkReferer, getChapterDetail); // 获取单个章节内容
 
 // 🔒 需要身份认证（创建、更新、删除章节）
 router.post('/', authenticateToken, createChapter); // 创建章节

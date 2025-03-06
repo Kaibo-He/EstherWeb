@@ -1,3 +1,4 @@
+require('dotenv').config(); // 读取 .env 配置
 const express = require('express');
 const cors = require('cors');
 const { sequelize } = require('./models');
@@ -8,6 +9,7 @@ const chapterRoutes = require('./routes/chapterRoutes');
 const characterRoutes = require('./routes/characterRoutes');
 const authRoutes = require('./routes/authRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
+const checkReferer = require('./middleware/checkReferer');
 
 const app = express();
 const port = 5000;
@@ -17,11 +19,16 @@ sequelize.authenticate()
     .then(() => console.log('✅ Database connected successfully.'))
     .catch(err => console.error('❌ Database connection error:', err));
 
-app.use(cors());
+app.use(cors({
+    origin: process.env.FRONT_DOMAIN, // 只允许你的前端访问
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', checkReferer, express.static(path.join(__dirname, 'uploads')));
 
 // Routes
 app.use('/api/works', workRoutes);

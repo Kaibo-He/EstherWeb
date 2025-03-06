@@ -1,5 +1,6 @@
 const express = require('express');
 const authenticateToken = require('../middleware/auth');
+const checkReferer = require('../middleware/checkReferer');
 const {
     createWork,
     getAllWorks,
@@ -13,8 +14,8 @@ const {
 const router = express.Router();
 
 // 🔓 公开 API（获取信息）
-router.get('/', getAllWorks); // 获取作品列表
-router.get('/:id', getWork); // 获取单个作品
+router.get('/', checkReferer, getAllWorks); // 获取作品列表
+router.get('/:id', checkReferer, getWork); // 获取单个作品
 
 // 🔒 需要身份认证（创建、更新、删除作品）
 router.post('/', authenticateToken, createWork); // 创建作品

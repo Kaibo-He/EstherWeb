@@ -1,5 +1,6 @@
 const express = require('express');
 const authenticateToken = require('../middleware/auth');
+const checkReferer = require('../middleware/checkReferer');
 const {
     createCharacter,
     getCharactersByWork,
@@ -18,10 +19,10 @@ const {
 const router = express.Router();
 
 // 🔓 公开 API（获取信息）
-router.get('/:work_id', getCharactersByWork); // 获取作品角色列表
-router.get('/one/:id', getCharacter); // 获取单个角色
-router.get('/details/:character_id', getCharacterDetails); // 获取角色详情列表
-router.get('/details/one/:id', getCharacterDetail); // 获取单个角色详情
+router.get('/:work_id', checkReferer, getCharactersByWork); // 获取作品角色列表
+router.get('/one/:id', checkReferer, getCharacter); // 获取单个角色
+router.get('/details/:character_id', checkReferer, getCharacterDetails); // 获取角色详情列表
+router.get('/details/one/:id', checkReferer, getCharacterDetail); // 获取单个角色详情
 
 // 🔒 需要身份认证（创建、更新、删除角色）
 router.post('/', authenticateToken, createCharacter); // 创建角色
