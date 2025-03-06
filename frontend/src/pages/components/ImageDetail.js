@@ -4,11 +4,8 @@ import '../../style.css'; // 样式文件
 
 const ImageDetail = ({ content }) => {
     const conSrc = `${config.backendUrl}${content}`;
-    const handleContextMenu = (e) => {
-      e.preventDefault();
-    };
 
-    return <img src={conSrc} alt="Protected" draggable={false} className='detail-img' onContextMenu={handleContextMenu}/>;
+    return <img src={conSrc} alt="Protected" draggable={false} className='detail-img' onContextMenu={(e) => e.preventDefault()} onTouchStart={(e) => e.preventDefault()}/>;
   };
   
 export default ImageDetail;
